@@ -29,8 +29,8 @@ const filtersData = [
 
 const MAX_NUMBER_OF_CARDS = 7;
 
-// Random number
-const generateRandomNumber = (max, min = 0) => Math.round(min - 0.5 + Math.random() * (max - min + 1));
+// Random number - not including max value
+const generateRandomNumber = (max, min = 0) => Math.floor(Math.random() * (max - min)) + min;
 
 // Create filter
 const getFilterTemplate = (text, amount, isChecked = false) => {
