@@ -2,7 +2,32 @@
 
 const filterContainer = document.querySelector(`.main__filter`);
 const cardContainer = document.querySelector(`.board__tasks`);
-const filterNames = [`All`, `Overdue`, `Today`, `Favorites`, `Repeating`, `Tags`, `Archive`];
+const filtersData = [
+  {
+    name: `All`,
+    isChecked: true
+  },
+  {
+    name: `Overdue`
+  },
+  {
+    name: `Today`
+  },
+  {
+    name: `Favorites`
+  },
+  {
+    name: `Repeating`
+  },
+  {
+    name: `Tags`
+  },
+  {
+    name: `Archive`
+  }
+];
+
+const MAX_NUMBER_OF_CARDS = 7;
 
 // Random number
 const generateRandomNumber = (max, min = 0) => Math.round(min - 0.5 + Math.random() * (max - min + 1));
@@ -318,29 +343,41 @@ It is example of repeating task. It marks by wave.</textarea
             </form>
           </article>`;
 
-const createFilters = (array) => {
-  for (const value of array) {
-    const isChecked = (value === array[0]) ? true : false;
+const createFiltersTemplate = (filters) => {
+  let filtersTemplate = ``;
+  for (const filter of filters) {
+    const isChecked = filter.isChecked;
     const randomNumber = isChecked ? generateRandomNumber(30, 1) : generateRandomNumber(30);
-    filterContainer.insertAdjacentHTML(`beforeend`, getFilterTemplate(value, randomNumber, isChecked));
+    filtersTemplate += getFilterTemplate(filter.name, randomNumber, isChecked);
   }
+  return filtersTemplate;
 };
 
-const createCards = (amount) => {
+const renderFilters = (filters) => {
+  filterContainer.insertAdjacentHTML(`beforeend`, createFiltersTemplate(filters));
+};
+
+const createCardsTemplate = (amount) => {
+  let cardsTemplate = ``;
   for (let i = 0; i < amount; i++) {
-    cardContainer.insertAdjacentHTML(`beforeend`, getCardTemplate());
+    cardsTemplate += getCardTemplate();
   }
+  return cardsTemplate;
+};
+
+const renderCards = (amount) => {
+  cardContainer.insertAdjacentHTML(`beforeend`, createCardsTemplate(amount));
 };
 
 const onFilterClick = (evt) => {
-  const target = evt.target.tagName.toLowerCase();
-  if (target === `input`) {
+  const clickedTagName = evt.target.tagName.toLowerCase();
+  if (clickedTagName === `input`) {
     cardContainer.innerHTML = ``;
-    createCards(generateRandomNumber(10, 1));
+    renderCards(generateRandomNumber(10, 1));
   }
 };
 
 filterContainer.addEventListener(`click`, onFilterClick);
 
-createFilters(filterNames);
-createCards(7);
+renderFilters(filtersData);
+renderCards(MAX_NUMBER_OF_CARDS);
