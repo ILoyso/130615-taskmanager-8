@@ -44,7 +44,7 @@ const days = {
 
 export default () => ({
   title: getRandomValue(titles),
-  dueDate: Date.now() + generateRandomNumber(Time.DAY + 1, -Time.DAY) * Time.DAY * Time.HOUR * Time.MINUTE * Time.SECOND,
+  dueDate: Date.now() + generateRandomNumber(Time.WEEK + 1, -Time.WEEK) * Time.DAY * Time.HOUR * Time.MINUTE * Time.SECOND,
   tags: getRandomValues(Array.from(tags), 3),
   picture: `http://picsum.photos/100/100?r=${generateRandomNumber(100)}`,
   color: getRandomValue(Array.from(colors)),
