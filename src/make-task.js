@@ -7,21 +7,23 @@ const isRepeating = (days) => {
   return false;
 };
 
-const repeatDaysTemplate = (days) => {
+const repeatDaysTemplate = (days, id) => {
   let daysTemplate = ``;
+  let idIndex = 1;
   for (const day in days) {
     if (days.hasOwnProperty(day)) {
       daysTemplate += `<input
             class="visually-hidden card__repeat-day-input"
             type="checkbox"
-            id="repeat-${day}-1"
+            id="repeat-${day}-${id}${idIndex}"
             name="repeat"
             value="${day}"
             ${days[day] ? `checked` : ``}
           />
-          <label class="card__repeat-day" for="repeat-${day}-2"
+          <label class="card__repeat-day" for="repeat-${day}-${id}${idIndex}"
             >${day}</label
           >`;
+      idIndex++;
     }
   }
   return daysTemplate;
@@ -53,7 +55,7 @@ const convertDate = (date) => {
   return fullDate;
 };
 
-export default (task) => `<article class="card card--${task.color} ${isRepeating(task.repeatingDays) ? `card--repeat` : ``} ${task.dueDate < Date.now() ? `card--deadline` : ``}">
+export default (task, dayId) => `<article class="card card--${task.color} ${isRepeating(task.repeatingDays) ? `card--repeat` : ``} ${task.dueDate < Date.now() ? `card--deadline` : ``}">
             <form class="card__form" method="get">
               <div class="card__inner">
                 <div class="card__control">
@@ -119,7 +121,7 @@ export default (task) => `<article class="card card--${task.color} ${isRepeating
 
                       <fieldset class="card__repeat-days" disabled>
                         <div class="card__repeat-days-inner">                    
-                          ${repeatDaysTemplate(task.repeatingDays)}
+                          ${repeatDaysTemplate(task.repeatingDays, dayId)}
                         </div>
                       </fieldset>
                     </div>

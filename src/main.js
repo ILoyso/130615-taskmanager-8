@@ -26,7 +26,7 @@ const renderFilters = (filtersData) => {
 const createTasksTemplate = (amount) => {
   let tasksTemplate = [];
   for (let i = 0; i < amount; i++) {
-    tasksTemplate.push(makeTask(getTask()));
+    tasksTemplate.push(makeTask(getTask(), i));
   }
   return tasksTemplate;
 };

@@ -48,7 +48,7 @@ export default () => ({
   tags: getRandomValues(Array.from(tags), 3),
   picture: `http://picsum.photos/100/100?r=${generateRandomNumber(100)}`,
   color: getRandomValue(Array.from(colors)),
-  repeatingDays: days, // выводить верный номер в ID
+  repeatingDays: days,
   isFavorite: generateRandomBoolean(),
   isDone: generateRandomBoolean()
 });
