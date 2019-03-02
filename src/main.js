@@ -1,7 +1,6 @@
 import {generateRandomNumber} from './utils';
-import getTask from './get-task';
-import makeTask from './make-task';
 import makeFilter from './make-filter';
+import createTasksTemplate from './get-tasks';
 import filters from './filters';
 
 const MAX_NUMBER_OF_TASKS = 7;
@@ -21,14 +20,6 @@ const createFiltersTemplate = (filtersData) => {
 
 const renderFilters = (filtersData) => {
   filterContainer.insertAdjacentHTML(`beforeend`, createFiltersTemplate(filtersData));
-};
-
-const createTasksTemplate = (amount) => {
-  let tasksTemplate = [];
-  for (let i = 0; i < amount; i++) {
-    tasksTemplate.push(makeTask(getTask(), i));
-  }
-  return tasksTemplate;
 };
 
 const renderTasks = (dist, amount) => {

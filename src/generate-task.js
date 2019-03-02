@@ -32,7 +32,7 @@ const colors = new Set([
   `pink`
 ]);
 
-const days = {
+const getDays = () => ({
   'mo': generateRandomBoolean(),
   'tu': generateRandomBoolean(),
   'we': generateRandomBoolean(),
@@ -40,7 +40,7 @@ const days = {
   'fr': generateRandomBoolean(),
   'sa': generateRandomBoolean(),
   'su': generateRandomBoolean()
-};
+});
 
 export default () => ({
   title: getRandomValue(titles),
@@ -48,7 +48,7 @@ export default () => ({
   tags: getRandomValues(Array.from(tags), 3),
   picture: `http://picsum.photos/100/100?r=${generateRandomNumber(100)}`,
   color: getRandomValue(Array.from(colors)),
-  repeatingDays: days,
+  repeatingDays: getDays(),
   isFavorite: generateRandomBoolean(),
   isDone: generateRandomBoolean()
 });
