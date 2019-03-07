@@ -1,10 +1,14 @@
-import makeTask from "./make-task";
 import getTask from "./get-task";
 
+/**
+ * Function for generate array of tasks data
+ * @param {Number} amount
+ * @return {Object[]}
+ */
 export default (amount) => {
-  let tasksTemplate = [];
+  let tasks = [];
   for (let i = 0; i < amount; i++) {
-    tasksTemplate.push(makeTask(getTask(), i));
+    tasks.push(getTask());
   }
-  return tasksTemplate;
+  return tasks;
 };

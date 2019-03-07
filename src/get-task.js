@@ -32,6 +32,10 @@ const colors = new Set([
   `pink`
 ]);
 
+/**
+ * Function for generate random boolean for every day
+ * @return {Object}
+ */
 const getDays = () => ({
   'mo': generateRandomBoolean(),
   'tu': generateRandomBoolean(),
@@ -42,6 +46,11 @@ const getDays = () => ({
   'su': generateRandomBoolean()
 });
 
+
+/**
+ * Function for generate mock data for tasks
+ * @return {Object}
+ */
 export default () => ({
   title: getRandomValue(titles),
   dueDate: Date.now() + generateRandomNumber(Time.WEEK + 1, -Time.WEEK) * Time.DAY * Time.HOUR * Time.MINUTE * Time.SECOND,

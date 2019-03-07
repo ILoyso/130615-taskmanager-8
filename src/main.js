@@ -2,12 +2,20 @@ import {generateRandomNumber} from './utils';
 import makeFilter from './make-filter';
 import generateTasks from './generate-tasks';
 import filters from './filters';
+import Task from './task';
+import TaskEdit from './task-edit';
 
 const MAX_NUMBER_OF_TASKS = 7;
 
 const filterContainer = document.querySelector(`.main__filter`);
-const taskContainer = document.querySelector(`.board__tasks`);
+const tasksContainer = document.querySelector(`.board__tasks`);
 
+
+/**
+ * Function for generate all filters template
+ * @param {Object[]} filtersData
+ * @return {String}
+ */
 const createFiltersTemplate = (filtersData) => {
   let filtersTemplate = ``;
   for (const filter of filtersData) {
@@ -18,23 +26,68 @@ const createFiltersTemplate = (filtersData) => {
   return filtersTemplate;
 };
 
-const renderFilters = (filtersData) => {
-  filterContainer.insertAdjacentHTML(`beforeend`, createFiltersTemplate(filtersData));
+
+/**
+ * Function for generate array with all tasks data
+ * @param {Number} amount
+ * @return {Object[]}
+ */
+const generateTasksTemplates = (amount) => generateTasks(amount);
+
+
+/**
+ * Function for render all filters
+ * @param {Object[]} filtersData
+ * @return {HTMLElement}
+ */
+const renderFilters = (filtersData) => filterContainer.insertAdjacentHTML(`beforeend`, createFiltersTemplate(filtersData));
+
+
+/**
+ * Function for render all tasks
+ * @param {Node} dist
+ * @param {Number} tasks
+ */
+const renderTasks = (dist, tasks) => {
+  const fragment = document.createDocumentFragment();
+
+  tasks.forEach((task, index) => {
+    const taskComponent = new Task(task);
+    const editTaskComponent = new TaskEdit(task, index);
+
+    taskComponent.onEdit = () => {
+      editTaskComponent.render();
+      dist.replaceChild(editTaskComponent.element, taskComponent.element);
+      taskComponent.unrender();
+    };
+
+    editTaskComponent.onSubmit = () => {
+      taskComponent.render();
+      dist.replaceChild(taskComponent.element, editTaskComponent.element);
+      editTaskComponent.unrender();
+    };
+
+    fragment.appendChild(taskComponent.render());
+  });
+
+  dist.appendChild(fragment);
 };
 
-const renderTasks = (dist, amount) => {
-  dist.insertAdjacentHTML(`beforeend`, generateTasks(amount).join(``));
-};
 
+/**
+ * Function on filter click - generate new tasks
+ * @param {Event} evt
+ */
 const onFilterClick = (evt) => {
   const clickedTagName = evt.target.tagName.toLowerCase();
   if (clickedTagName === `input`) {
-    taskContainer.innerHTML = ``;
-    renderTasks(taskContainer, generateRandomNumber(10, 1));
+    tasksContainer.innerHTML = ``;
+    renderTasks(tasksContainer, generateTasksTemplates(generateRandomNumber(10)));
   }
 };
 
-filterContainer.addEventListener(`click`, onFilterClick);
 
+renderTasks(tasksContainer, generateTasksTemplates(MAX_NUMBER_OF_TASKS));
 renderFilters(filters);
-renderTasks(taskContainer, MAX_NUMBER_OF_TASKS);
+
+filterContainer.addEventListener(`click`, onFilterClick);
