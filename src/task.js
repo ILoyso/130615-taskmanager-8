@@ -1,6 +1,12 @@
 import {months, createElement} from './utils';
 
+/** Class representing a task */
 export default class Task {
+
+  /**
+   * Create c task
+   * @param {Object} data
+   */
   constructor(data) {
     this._title = data.title;
     this._tags = data.tags;
@@ -16,6 +22,11 @@ export default class Task {
     this._onEdit = null;
   }
 
+  /**
+   * Method for converting data
+   * @return {Object}
+   * @private
+   */
   _convertDate() {
     const dateStandart = new Date(this._dueDate);
     const convertedDate = dateStandart.toString().split(` `);
@@ -27,6 +38,11 @@ export default class Task {
     return fullDate;
   }
 
+  /**
+   * Method for creating hashtags template
+   * @return {String}
+   * @private
+   */
   _getRepeatHashtagsTemplate() {
     return this._tags.map((tag) => `<span class="card__hashtag-inner">
       <input
@@ -44,22 +60,45 @@ export default class Task {
     </span>`).join(``);
   }
 
+  /**
+   * Method for check is this task repeating or no
+   * @return {boolean}
+   * @private
+   */
   _isRepeating() {
     return Object.values(this._repeatingDays).some((it) => it === true);
   }
 
+  /**
+   * Method for check for function and if yes to white it in this._onEdit
+   * @private
+   */
   _onEditButtonClick() {
-    typeof this._onEdit === `function` && this._onEdit();
+    if (typeof this._onEdit === `function`) {
+      this._onEdit();
+    }
   }
 
-  get element() {
-    return this._element;
-  }
-
+  /**
+   * Setter for function that will be work on Edit Button click
+   * @param {Function} fn
+   */
   set onEdit(fn) {
     this._onEdit = fn;
   }
 
+  /**
+   * Getter for DOM element (if it is)
+   * @return {DOM/null}
+   */
+  get element() {
+    return this._element;
+  }
+
+  /**
+   * Getter for task template
+   * @return {string}
+   */
   get template() {
     return `<article class="card card--${this._color} ${this._isRepeating() ? `card--repeat` : ``} ${this._dueDate < Date.now() ? `card--deadline` : ``}">
       <form class="card__form" method="get">
@@ -144,20 +183,27 @@ export default class Task {
     </article>`;
   }
 
+  /** Method for bing function to edit button */
   bind() {
     this._element.querySelector(`.card__btn--edit`).addEventListener(`click`, this._onEditButtonClick.bind(this));
   }
 
+  /**
+   * Method for renred this task and add events
+   * @return {DOM/null}
+   */
   render() {
     this._element = createElement(this.template);
     this.bind();
     return this._element;
   }
 
+  /** Method for unbing function from edit button */
   unbind() {
     this._element.querySelector(`.card__btn--edit`).removeEventListener(`submit`, this._onEditButtonClick.bind(this));
   }
 
+  /** Method for unrender this task */
   unrender() {
     this.unbind();
     this._element = null;

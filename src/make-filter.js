@@ -1,3 +1,10 @@
+/**
+ * Function for generate filter template
+ * @param {String} text
+ * @param {Number} amount
+ * @param {Boolean} isChecked
+ * @return {String}
+ */
 const getFilterTemplate = (text, amount, isChecked = false) => {
   const filterId = text.toLowerCase();
   const checkedState = isChecked ? `checked` : ``;

@@ -1,6 +1,13 @@
 import {months, createElement} from './utils';
 
+/** Class representing a edit version of task */
 export default class TaskEdit {
+
+  /**
+   * Create c task
+   * @param {Object} data
+   * @param {Number} dayId
+   */
   constructor(data, dayId) {
     this._title = data.title;
     this._tags = data.tags;
@@ -14,6 +21,11 @@ export default class TaskEdit {
     this._onSubmit = null;
   }
 
+  /**
+   * Method for converting data
+   * @return {Object}
+   * @private
+   */
   _convertDate() {
     const dateStandart = new Date(this._dueDate);
     const convertedDate = dateStandart.toString().split(` `);
@@ -25,6 +37,11 @@ export default class TaskEdit {
     return fullDate;
   }
 
+  /**
+   * Method for creating colors template
+   * @return {String}
+   * @private
+   */
   _getColorsTemplate() {
     const colors = new Set([
       `black`,
@@ -49,6 +66,11 @@ export default class TaskEdit {
     >`).join(``);
   }
 
+  /**
+   * Method for creating repeating days template
+   * @return {String}
+   * @private
+   */
   _getRepeatDaysTemplate() {
     let daysTemplate = ``;
     let idIndex = 1;
@@ -71,6 +93,11 @@ export default class TaskEdit {
     return daysTemplate;
   }
 
+  /**
+   * Method for creating hashtags template
+   * @return {String}
+   * @private
+   */
   _getRepeatHashtagsTemplate() {
     return this._tags.map((tag) => `<span class="card__hashtag-inner">
       <input
@@ -88,23 +115,47 @@ export default class TaskEdit {
     </span>`).join(``);
   }
 
+  /**
+   * Method for check is this task repeating or no
+   * @return {boolean}
+   * @private
+   */
   _isRepeating() {
     return Object.values(this._repeatingDays).some((it) => it === true);
   }
 
+  /**
+   * Method for check for function and if yes to white it in this._onSubmit
+   * @param {Event} evt
+   * @private
+   */
   _onSubmitButtonClick(evt) {
     evt.preventDefault();
-    typeof this._onSubmit === `function` && this._onSubmit();
+    if (typeof this._onSubmit === `function`) {
+      this._onSubmit();
+    }
   }
 
+  /**
+   * Setter for function that will be work on Submit Button click
+   * @param {Function} fn
+   */
   set onSubmit(fn) {
     this._onSubmit = fn;
   }
 
+  /**
+   * Getter for DOM element (if it is)
+   * @return {DOM/null}
+   */
   get element() {
     return this._element;
   }
 
+  /**
+   * Getter for taskEdit template
+   * @return {string}
+   */
   get template() {
     return `<article class="card card--${this._color} ${this._isRepeating() ? `card--repeat` : ``} ${this._dueDate < Date.now() ? `card--deadline` : ``} card--edit">
       <form class="card__form" method="get">
@@ -223,20 +274,27 @@ ${this._getRepeatDaysTemplate()}
     </article>`;
   }
 
+  /** Method for bing function to submit button */
   bind() {
     this._element.querySelector(`.card__form`).addEventListener(`submit`, this._onSubmitButtonClick.bind(this));
   }
 
+  /**
+   * Method for renred this taskEdit and add events
+   * @return {DOM/null}
+   */
   render() {
     this._element = createElement(this.template);
     this.bind();
     return this._element;
   }
 
+  /** Method for unbing function from submit button */
   unbind() {
     this._element.querySelector(`.card__form`).removeEventListener(`submit`, this._onSubmitButtonClick.bind(this));
   }
 
+  /** Method for unrender this taskEdit */
   unrender() {
     this.unbind();
     this._element = null;

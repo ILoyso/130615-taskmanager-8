@@ -2,7 +2,6 @@ import {generateRandomNumber} from './utils';
 import makeFilter from './make-filter';
 import generateTasks from './generate-tasks';
 import filters from './filters';
-
 import Task from './task';
 import TaskEdit from './task-edit';
 
@@ -11,6 +10,12 @@ const MAX_NUMBER_OF_TASKS = 7;
 const filterContainer = document.querySelector(`.main__filter`);
 const tasksContainer = document.querySelector(`.board__tasks`);
 
+
+/**
+ * Function for generate all filters template
+ * @param {Object[]} filtersData
+ * @return {String}
+ */
 const createFiltersTemplate = (filtersData) => {
   let filtersTemplate = ``;
   for (const filter of filtersData) {
@@ -21,10 +26,28 @@ const createFiltersTemplate = (filtersData) => {
   return filtersTemplate;
 };
 
+
+/**
+ * Function for generate array with all tasks data
+ * @param {Number} amount
+ * @return {Object[]}
+ */
 const generateTasksTemplates = (amount) => generateTasks(amount);
 
+
+/**
+ * Function for render all filters
+ * @param {Object[]} filtersData
+ * @return {HTMLElement}
+ */
 const renderFilters = (filtersData) => filterContainer.insertAdjacentHTML(`beforeend`, createFiltersTemplate(filtersData));
 
+
+/**
+ * Function for render all tasks
+ * @param {Node} dist
+ * @param {Number} tasks
+ */
 const renderTasks = (dist, tasks) => {
   const fragment = document.createDocumentFragment();
 
@@ -50,6 +73,11 @@ const renderTasks = (dist, tasks) => {
   dist.appendChild(fragment);
 };
 
+
+/**
+ * Function on filter click - generate new tasks
+ * @param {Event} evt
+ */
 const onFilterClick = (evt) => {
   const clickedTagName = evt.target.tagName.toLowerCase();
   if (clickedTagName === `input`) {
@@ -57,6 +85,7 @@ const onFilterClick = (evt) => {
     renderTasks(tasksContainer, generateTasksTemplates(generateRandomNumber(10)));
   }
 };
+
 
 renderTasks(tasksContainer, generateTasksTemplates(MAX_NUMBER_OF_TASKS));
 renderFilters(filters);
