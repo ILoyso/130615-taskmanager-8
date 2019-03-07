@@ -1,10 +1,9 @@
-import makeTask from "./make-task";
 import getTask from "./get-task";
 
 export default (amount) => {
-  let tasksTemplate = [];
+  let tasks = [];
   for (let i = 0; i < amount; i++) {
-    tasksTemplate.push(makeTask(getTask(), i));
+    tasks.push(getTask());
   }
-  return tasksTemplate;
+  return tasks;
 };

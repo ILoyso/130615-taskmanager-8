@@ -3,10 +3,13 @@ import makeFilter from './make-filter';
 import generateTasks from './generate-tasks';
 import filters from './filters';
 
+import Task from './task';
+import TaskEdit from './task-edit';
+
 const MAX_NUMBER_OF_TASKS = 7;
 
 const filterContainer = document.querySelector(`.main__filter`);
-const taskContainer = document.querySelector(`.board__tasks`);
+const tasksContainer = document.querySelector(`.board__tasks`);
 
 const createFiltersTemplate = (filtersData) => {
   let filtersTemplate = ``;
@@ -18,23 +21,44 @@ const createFiltersTemplate = (filtersData) => {
   return filtersTemplate;
 };
 
-const renderFilters = (filtersData) => {
-  filterContainer.insertAdjacentHTML(`beforeend`, createFiltersTemplate(filtersData));
-};
+const generateTasksTemplates = (amount) => generateTasks(amount);
 
-const renderTasks = (dist, amount) => {
-  dist.insertAdjacentHTML(`beforeend`, generateTasks(amount).join(``));
+const renderFilters = (filtersData) => filterContainer.insertAdjacentHTML(`beforeend`, createFiltersTemplate(filtersData));
+
+const renderTasks = (dist, tasks) => {
+  const fragment = document.createDocumentFragment();
+
+  tasks.forEach((task, index) => {
+    const taskComponent = new Task(task);
+    const editTaskComponent = new TaskEdit(task, index);
+
+    taskComponent.onEdit = () => {
+      editTaskComponent.render();
+      dist.replaceChild(editTaskComponent.element, taskComponent.element);
+      taskComponent.unrender();
+    };
+
+    editTaskComponent.onSubmit = () => {
+      taskComponent.render();
+      dist.replaceChild(taskComponent.element, editTaskComponent.element);
+      editTaskComponent.unrender();
+    };
+
+    fragment.appendChild(taskComponent.render());
+  });
+
+  dist.appendChild(fragment);
 };
 
 const onFilterClick = (evt) => {
   const clickedTagName = evt.target.tagName.toLowerCase();
   if (clickedTagName === `input`) {
-    taskContainer.innerHTML = ``;
-    renderTasks(taskContainer, generateRandomNumber(10, 1));
+    tasksContainer.innerHTML = ``;
+    renderTasks(tasksContainer, generateTasksTemplates(generateRandomNumber(10)));
   }
 };
 
-filterContainer.addEventListener(`click`, onFilterClick);
-
+renderTasks(tasksContainer, generateTasksTemplates(MAX_NUMBER_OF_TASKS));
 renderFilters(filters);
-renderTasks(taskContainer, MAX_NUMBER_OF_TASKS);
+
+filterContainer.addEventListener(`click`, onFilterClick);
