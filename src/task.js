@@ -33,11 +33,11 @@ export default class Task extends Component {
    */
   _convertDate() {
     const dateStandart = new Date(this._dueDate);
-    const convertedDate = dateStandart.toString().split(` `);
     let fullDate = {};
-    fullDate.day = convertedDate[2];
+    fullDate.day = dateStandart.getDay();
     fullDate.month = months[dateStandart.getMonth()];
-    fullDate.time = convertedDate[4].substr(0, 5);
+    fullDate.hours = dateStandart.getHours();
+    fullDate.minutes = dateStandart.getMinutes();
 
     return fullDate;
   }
@@ -143,7 +143,7 @@ export default class Task extends Component {
                     <input
                       class="card__time"
                       type="text"
-                      placeholder="${this._convertDate().time}"
+                      placeholder="${this._convertDate().hours}:${this._convertDate().minutes}"
                       name="time"
                     />
                   </label>
