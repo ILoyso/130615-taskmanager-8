@@ -34,7 +34,7 @@ export default class Task extends Component {
   _convertDate() {
     const dateStandart = new Date(this._dueDate);
     let fullDate = {};
-    fullDate.day = dateStandart.getDay();
+    fullDate.day = dateStandart.getDate();
     fullDate.month = months[dateStandart.getMonth()];
     fullDate.hours = dateStandart.getHours();
     fullDate.minutes = dateStandart.getMinutes();
