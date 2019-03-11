@@ -45,10 +45,10 @@ const renderFilters = (filtersData) => filterContainer.insertAdjacentHTML(`befor
 
 /**
  * Function for render all tasks
- * @param {Node} dist
+ * @param {Node} container
  * @param {Number} tasks
  */
-const renderTasks = (dist, tasks) => {
+const renderTasks = (container, tasks) => {
   const fragment = document.createDocumentFragment();
 
   tasks.forEach((task, index) => {
@@ -57,20 +57,20 @@ const renderTasks = (dist, tasks) => {
 
     taskComponent.onEdit = () => {
       editTaskComponent.render();
-      dist.replaceChild(editTaskComponent.element, taskComponent.element);
+      container.replaceChild(editTaskComponent.element, taskComponent.element);
       taskComponent.unrender();
     };
 
     editTaskComponent.onSubmit = () => {
       taskComponent.render();
-      dist.replaceChild(taskComponent.element, editTaskComponent.element);
+      container.replaceChild(taskComponent.element, editTaskComponent.element);
       editTaskComponent.unrender();
     };
 
     fragment.appendChild(taskComponent.render());
   });
 
-  dist.appendChild(fragment);
+  container.appendChild(fragment);
 };
 
 

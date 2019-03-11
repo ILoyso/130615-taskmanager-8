@@ -1,13 +1,16 @@
-import {months, createElement} from './utils';
+import {months} from './utils';
+import Component from "./component";
 
 /** Class representing a task */
-export default class Task {
+export default class Task extends Component {
 
   /**
    * Create c task
    * @param {Object} data
    */
   constructor(data) {
+    super();
+
     this._title = data.title;
     this._tags = data.tags;
     this._picture = data.picture;
@@ -20,6 +23,7 @@ export default class Task {
       isDone: false
     };
     this._onEdit = null;
+    this._onEditButtonClick = this._onEditButtonClick.bind(this);
   }
 
   /**
@@ -29,11 +33,11 @@ export default class Task {
    */
   _convertDate() {
     const dateStandart = new Date(this._dueDate);
-    const convertedDate = dateStandart.toString().split(` `);
     let fullDate = {};
-    fullDate.day = convertedDate[2];
+    fullDate.day = dateStandart.getDate();
     fullDate.month = months[dateStandart.getMonth()];
-    fullDate.time = convertedDate[4].substr(0, 5);
+    fullDate.hours = dateStandart.getHours();
+    fullDate.minutes = dateStandart.getMinutes();
 
     return fullDate;
   }
@@ -88,14 +92,6 @@ export default class Task {
   }
 
   /**
-   * Getter for DOM element (if it is)
-   * @return {DOM/null}
-   */
-  get element() {
-    return this._element;
-  }
-
-  /**
    * Getter for task template
    * @return {string}
    */
@@ -147,15 +143,11 @@ export default class Task {
                     <input
                       class="card__time"
                       type="text"
-                      placeholder="${this._convertDate().time}"
+                      placeholder="${this._convertDate().hours}:${this._convertDate().minutes}"
                       name="time"
                     />
                   </label>
                 </fieldset>
-
-                <button class="card__repeat-toggle" type="button">
-                  repeat:<span class="card__repeat-status">${this._isRepeating() ? `yes` : `no`}</span>
-                </button>
               </div>
 
               <div class="card__hashtag">
@@ -185,27 +177,11 @@ export default class Task {
 
   /** Method for bing function to edit button */
   bind() {
-    this._element.querySelector(`.card__btn--edit`).addEventListener(`click`, this._onEditButtonClick.bind(this));
-  }
-
-  /**
-   * Method for renred this task and add events
-   * @return {DOM/null}
-   */
-  render() {
-    this._element = createElement(this.template);
-    this.bind();
-    return this._element;
+    this._element.querySelector(`.card__btn--edit`).addEventListener(`click`, this._onEditButtonClick);
   }
 
   /** Method for unbing function from edit button */
   unbind() {
-    this._element.querySelector(`.card__btn--edit`).removeEventListener(`submit`, this._onEditButtonClick.bind(this));
-  }
-
-  /** Method for unrender this task */
-  unrender() {
-    this.unbind();
-    this._element = null;
+    this._element.querySelector(`.card__btn--edit`).removeEventListener(`submit`, this._onEditButtonClick);
   }
 }

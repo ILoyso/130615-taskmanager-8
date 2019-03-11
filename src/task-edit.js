@@ -1,7 +1,8 @@
-import {months, createElement} from './utils';
+import {months} from './utils';
+import Component from "./component";
 
 /** Class representing a edit version of task */
-export default class TaskEdit {
+export default class TaskEdit extends Component {
 
   /**
    * Create c task
@@ -9,6 +10,8 @@ export default class TaskEdit {
    * @param {Number} dayId
    */
   constructor(data, dayId) {
+    super();
+
     this._title = data.title;
     this._tags = data.tags;
     this._picture = data.picture;
@@ -19,6 +22,7 @@ export default class TaskEdit {
 
     this._element = null;
     this._onSubmit = null;
+    this._onSubmitButtonClick = this._onSubmitButtonClick.bind(this);
   }
 
   /**
@@ -28,11 +32,11 @@ export default class TaskEdit {
    */
   _convertDate() {
     const dateStandart = new Date(this._dueDate);
-    const convertedDate = dateStandart.toString().split(` `);
     let fullDate = {};
-    fullDate.day = convertedDate[2];
+    fullDate.day = dateStandart.getDay();
     fullDate.month = months[dateStandart.getMonth()];
-    fullDate.time = convertedDate[4].substr(0, 5);
+    fullDate.hours = dateStandart.getHours();
+    fullDate.minutes = dateStandart.getMinutes();
 
     return fullDate;
   }
@@ -145,14 +149,6 @@ export default class TaskEdit {
   }
 
   /**
-   * Getter for DOM element (if it is)
-   * @return {DOM/null}
-   */
-  get element() {
-    return this._element;
-  }
-
-  /**
    * Getter for taskEdit template
    * @return {string}
    */
@@ -211,7 +207,7 @@ export default class TaskEdit {
                     <input
                       class="card__time"
                       type="text"
-                      placeholder="${this._convertDate().time}"
+                      placeholder="${this._convertDate().hours}:${this._convertDate().minutes}"
                       name="time"
                     />
                   </label>
@@ -276,27 +272,11 @@ ${this._getRepeatDaysTemplate()}
 
   /** Method for bing function to submit button */
   bind() {
-    this._element.querySelector(`.card__form`).addEventListener(`submit`, this._onSubmitButtonClick.bind(this));
-  }
-
-  /**
-   * Method for renred this taskEdit and add events
-   * @return {DOM/null}
-   */
-  render() {
-    this._element = createElement(this.template);
-    this.bind();
-    return this._element;
+    this._element.querySelector(`.card__form`).addEventListener(`submit`, this._onSubmitButtonClick);
   }
 
   /** Method for unbing function from submit button */
   unbind() {
-    this._element.querySelector(`.card__form`).removeEventListener(`submit`, this._onSubmitButtonClick.bind(this));
-  }
-
-  /** Method for unrender this taskEdit */
-  unrender() {
-    this.unbind();
-    this._element = null;
+    this._element.querySelector(`.card__form`).removeEventListener(`submit`, this._onSubmitButtonClick);
   }
 }
