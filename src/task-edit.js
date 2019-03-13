@@ -1,5 +1,7 @@
 import {months} from './utils';
-import Component from "./component";
+import Component from './component';
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.css';
 
 /** Class representing a edit version of task */
 export default class TaskEdit extends Component {
@@ -20,7 +22,7 @@ export default class TaskEdit extends Component {
     this._repeatingDays = data.repeatingDays;
     this._dayId = dayId;
 
-    this.state = {
+    this._state = {
       isDueDate: this._dueDate !== ``,
       isRepeated: this._isRepeating()
     };
@@ -141,7 +143,7 @@ export default class TaskEdit extends Component {
    * @private
    */
   _onChangeDate() {
-    this.state.isDueDate = !this.state.isDueDate;
+    this._state.isDueDate = !this._state.isDueDate;
     this.unbind();
     this._updateTemplate();
     this.bind();
@@ -152,7 +154,7 @@ export default class TaskEdit extends Component {
    * @private
    */
   _onChangeRepeated() {
-    this.state.isRepeated = !this.state.isRepeated;
+    this._state.isRepeated = !this._state.isRepeated;
     this.unbind();
     this._updateTemplate();
     this.bind();
@@ -232,7 +234,7 @@ export default class TaskEdit extends Component {
    * @return {string}
    */
   get template() {
-    return `<article class="card card--${this._color} ${this.state.isRepeated ? `card--repeat` : ``} ${this._dueDate < Date.now() ? `card--deadline` : ``} card--edit">
+    return `<article class="card card--${this._color} ${this._state.isRepeated ? `card--repeat` : ``} ${this._dueDate < Date.now() ? `card--deadline` : ``} card--edit">
       <form class="card__form" method="get">
         <div class="card__inner">
           <div class="card__control">
@@ -270,10 +272,10 @@ export default class TaskEdit extends Component {
             <div class="card__details">
               <div class="card__dates">
                 <button class="card__date-deadline-toggle" type="button">
-                  date: <span class="card__date-status">${this.state.isDueDate ? `yes` : `no`}</span>
+                  date: <span class="card__date-status">${this._state.isDueDate ? `yes` : `no`}</span>
                 </button>
   
-                <fieldset class="card__date-deadline" ${this.state.isDueDate ? `` : `disabled`}>
+                <fieldset class="card__date-deadline" ${this._state.isDueDate ? `` : `disabled`}>
                   <label class="card__input-deadline-wrap">
                     <input
                       class="card__date"
@@ -293,10 +295,10 @@ export default class TaskEdit extends Component {
                 </fieldset>
 
                 <button class="card__repeat-toggle" type="button">
-                  repeat:<span class="card__repeat-status">${this.state.isRepeated ? `yes` : `no`}</span>
+                  repeat:<span class="card__repeat-status">${this._state.isRepeated ? `yes` : `no`}</span>
                 </button>
 
-                <fieldset class="card__repeat-days" ${this.state.isRepeated ? `` : `disabled`}>
+                <fieldset class="card__repeat-days" ${this._state.isRepeated ? `` : `disabled`}>
                     <div class="card__repeat-days-inner">                    
 ${this._getRepeatDaysTemplate()}
                   </div>
@@ -354,6 +356,21 @@ ${this._getRepeatDaysTemplate()}
     this._element.querySelector(`.card__form`).addEventListener(`submit`, this._onSubmitButtonClick);
     this._element.querySelector(`.card__date-deadline-toggle`).addEventListener(`click`, this._onChangeDate);
     this._element.querySelector(`.card__repeat-toggle`).addEventListener(`click`, this._onChangeRepeated);
+
+    if (this._state.isDueDate) {
+      flatpickr(`.card__date`, {
+        altInput: true,
+        altFormat: `j F`,
+        dateFormat: `j F`
+      });
+      flatpickr(`.card__time`, {
+        enableTime: true,
+        noCalendar: true,
+        altInput: true,
+        altFormat: `h:i K`,
+        dateFormat: `h:i K`
+      });
+    }
   }
 
   /** Method for unbing function from submit button */

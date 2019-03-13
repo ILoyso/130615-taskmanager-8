@@ -19,7 +19,7 @@ export default class Task extends Component {
     this._repeatingDays = data.repeatingDays;
 
     this._element = null;
-    this.state = {
+    this._state = {
       isDone: false
     };
     this._onEdit = null;
