@@ -48,11 +48,11 @@ export default class Task extends Component {
    * @private
    */
   _getRepeatHashtagsTemplate() {
-    return this._tags.map((tag) => `<span class="card__hashtag-inner">
+    return Array.from(this._tags).map((tag) => `<span class="card__hashtag-inner">
       <input
         type="hidden"
         name="hashtag"
-        value="repeat"
+        value="${tag}"
         class="card__hashtag-hidden-input"
       />
       <button type="button" class="card__hashtag-name">
@@ -182,6 +182,19 @@ export default class Task extends Component {
 
   /** Method for unbing function from edit button */
   unbind() {
-    this._element.querySelector(`.card__btn--edit`).removeEventListener(`submit`, this._onEditButtonClick);
+    this._element.querySelector(`.card__btn--edit`).removeEventListener(`click`, this._onEditButtonClick);
+  }
+
+  /**
+   * Method for update task regarding new data params
+   * @param {Object} data
+   */
+  update(data) {
+    this._title = data.title;
+    this._tags = data.tags;
+    this._picture = data.picture;
+    this._color = data.color;
+    this._dueDate = data.dueDate;
+    this._repeatingDays = data.repeatingDays;
   }
 }
