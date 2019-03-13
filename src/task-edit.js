@@ -23,7 +23,7 @@ export default class TaskEdit extends Component {
     this._dayId = dayId;
 
     this._state = {
-      isDueDate: false,
+      isDueDate: this._dueDate !== ``,
       isRepeated: this._isRepeating()
     };
 
@@ -344,12 +344,12 @@ ${this._getRepeatDaysTemplate()}
     this._element.querySelector(`.card__repeat-toggle`).addEventListener(`click`, this._onChangeRepeated);
 
     if (this._state.isDueDate) {
-      flatpickr(`.card__date`, {
+      flatpickr(this._element.querySelector(`.card__date`), {
         altInput: true,
         altFormat: `j F`,
         dateFormat: `j F`
       });
-      flatpickr(`.card__time`, {
+      flatpickr(this._element.querySelector(`.card__time`), {
         enableTime: true,
         noCalendar: true,
         altInput: true,
