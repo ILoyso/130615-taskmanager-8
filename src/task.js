@@ -1,5 +1,5 @@
-import {months} from './utils';
-import Component from "./component";
+import Component from './component';
+import moment from 'moment';
 
 /** Class representing a task */
 export default class Task extends Component {
@@ -24,22 +24,6 @@ export default class Task extends Component {
     };
     this._onEdit = null;
     this._onEditButtonClick = this._onEditButtonClick.bind(this);
-  }
-
-  /**
-   * Method for converting data
-   * @return {Object}
-   * @private
-   */
-  _convertDate() {
-    const dateStandart = new Date(this._dueDate);
-    let fullDate = {};
-    fullDate.day = dateStandart.getDate();
-    fullDate.month = months[dateStandart.getMonth()];
-    fullDate.hours = dateStandart.getHours();
-    fullDate.minutes = dateStandart.getMinutes();
-
-    return fullDate;
   }
 
   /**
@@ -135,7 +119,7 @@ export default class Task extends Component {
                     <input
                       class="card__date"
                       type="text"
-                      placeholder="${this._convertDate().day} ${this._convertDate().month}"
+                      placeholder="${moment(this._dueDate).format(`DD MMMM`)}"
                       name="date"
                     />
                   </label>
@@ -143,7 +127,7 @@ export default class Task extends Component {
                     <input
                       class="card__time"
                       type="text"
-                      placeholder="${this._convertDate().hours}:${this._convertDate().minutes}"
+                      placeholder="${moment(this._dueDate).format(`hh:mm a`)}"
                       name="time"
                     />
                   </label>

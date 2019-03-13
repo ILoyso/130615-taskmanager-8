@@ -1,7 +1,7 @@
-import {months} from './utils';
 import Component from './component';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.css';
+import moment from 'moment';
 
 /** Class representing a edit version of task */
 export default class TaskEdit extends Component {
@@ -23,7 +23,7 @@ export default class TaskEdit extends Component {
     this._dayId = dayId;
 
     this._state = {
-      isDueDate: this._dueDate !== ``,
+      isDueDate: false,
       isRepeated: this._isRepeating()
     };
 
@@ -33,22 +33,6 @@ export default class TaskEdit extends Component {
     this._onSubmitButtonClick = this._onSubmitButtonClick.bind(this);
     this._onChangeDate = this._onChangeDate.bind(this);
     this._onChangeRepeated = this._onChangeRepeated.bind(this);
-  }
-
-  /**
-   * Method for converting data
-   * @return {Object}
-   * @private
-   */
-  _convertDate() {
-    const dateStandart = new Date(this._dueDate);
-    let fullDate = {};
-    fullDate.day = dateStandart.getDate();
-    fullDate.month = months[dateStandart.getMonth()];
-    fullDate.hours = dateStandart.getHours();
-    fullDate.minutes = dateStandart.getMinutes();
-
-    return fullDate;
   }
 
   /**
@@ -189,7 +173,7 @@ export default class TaskEdit extends Component {
       title: ``,
       color: ``,
       tags: new Set(),
-      dueDate: new Date(),
+      dueDate: new Date(this._dueDate),
       repeatingDays: {
         'mo': false,
         'tu': false,
@@ -280,7 +264,8 @@ export default class TaskEdit extends Component {
                     <input
                       class="card__date"
                       type="text"
-                      placeholder="${this._convertDate().day} ${this._convertDate().month}"
+                      placeholder="${moment(this._dueDate).format(`DD MMMM`)}"
+                      value="${moment(this._dueDate).format(`DD MMMM`)}"
                       name="date"
                     />
                   </label>
@@ -288,7 +273,8 @@ export default class TaskEdit extends Component {
                     <input
                       class="card__time"
                       type="text"
-                      placeholder="${this._convertDate().hours}:${this._convertDate().minutes}"
+                      placeholder="${moment(this._dueDate).format(`hh:mm a`)}"
+                      value="${moment(this._dueDate).format(`hh:mm a`)}"
                       name="time"
                     />
                   </label>
