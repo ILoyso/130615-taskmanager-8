@@ -1,5 +1,5 @@
-import {months} from './utils';
-import Component from "./component";
+import Component from './component';
+import moment from 'moment';
 
 /** Class representing a task */
 export default class Task extends Component {
@@ -19,27 +19,11 @@ export default class Task extends Component {
     this._repeatingDays = data.repeatingDays;
 
     this._element = null;
-    this.state = {
+    this._state = {
       isDone: false
     };
     this._onEdit = null;
     this._onEditButtonClick = this._onEditButtonClick.bind(this);
-  }
-
-  /**
-   * Method for converting data
-   * @return {Object}
-   * @private
-   */
-  _convertDate() {
-    const dateStandart = new Date(this._dueDate);
-    let fullDate = {};
-    fullDate.day = dateStandart.getDate();
-    fullDate.month = months[dateStandart.getMonth()];
-    fullDate.hours = dateStandart.getHours();
-    fullDate.minutes = dateStandart.getMinutes();
-
-    return fullDate;
   }
 
   /**
@@ -48,11 +32,11 @@ export default class Task extends Component {
    * @private
    */
   _getRepeatHashtagsTemplate() {
-    return this._tags.map((tag) => `<span class="card__hashtag-inner">
+    return Array.from(this._tags).map((tag) => `<span class="card__hashtag-inner">
       <input
         type="hidden"
         name="hashtag"
-        value="repeat"
+        value="${tag}"
         class="card__hashtag-hidden-input"
       />
       <button type="button" class="card__hashtag-name">
@@ -135,7 +119,7 @@ export default class Task extends Component {
                     <input
                       class="card__date"
                       type="text"
-                      placeholder="${this._convertDate().day} ${this._convertDate().month}"
+                      placeholder="${moment(this._dueDate).format(`DD MMMM`)}"
                       name="date"
                     />
                   </label>
@@ -143,7 +127,7 @@ export default class Task extends Component {
                     <input
                       class="card__time"
                       type="text"
-                      placeholder="${this._convertDate().hours}:${this._convertDate().minutes}"
+                      placeholder="${moment(this._dueDate).format(`hh:mm a`)}"
                       name="time"
                     />
                   </label>
@@ -182,6 +166,19 @@ export default class Task extends Component {
 
   /** Method for unbing function from edit button */
   unbind() {
-    this._element.querySelector(`.card__btn--edit`).removeEventListener(`submit`, this._onEditButtonClick);
+    this._element.querySelector(`.card__btn--edit`).removeEventListener(`click`, this._onEditButtonClick);
+  }
+
+  /**
+   * Method for update task regarding new data params
+   * @param {Object} data
+   */
+  update(data) {
+    this._title = data.title;
+    this._tags = data.tags;
+    this._picture = data.picture;
+    this._color = data.color;
+    this._dueDate = data.dueDate;
+    this._repeatingDays = data.repeatingDays;
   }
 }

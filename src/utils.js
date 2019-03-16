@@ -30,21 +30,6 @@ export const getRandomValue = (values) => values[generateRandomNumber(values.len
 export const getRandomValues = (values, amount) => values.slice(values.length - generateRandomNumber(amount + 1));
 
 
-export const months = [
-  `January`,
-  `February`,
-  `March`,
-  `April`,
-  `May`,
-  `June`,
-  `July`,
-  `August`,
-  `September`,
-  `October`,
-  `November`,
-  `December`
-];
-
 /**
  * Function for creating DOM element
  * @param {String} template

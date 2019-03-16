@@ -53,18 +53,20 @@ const renderTasks = (container, tasks) => {
 
   tasks.forEach((task, index) => {
     const taskComponent = new Task(task);
-    const editTaskComponent = new TaskEdit(task, index);
 
     taskComponent.onEdit = () => {
+      const editTaskComponent = new TaskEdit(task, index);
+
+      editTaskComponent.onSubmit = (newObject) => {
+        taskComponent.update(Object.assign(task, newObject));
+        taskComponent.render();
+        container.replaceChild(taskComponent.element, editTaskComponent.element);
+        editTaskComponent.unrender();
+      };
+
       editTaskComponent.render();
       container.replaceChild(editTaskComponent.element, taskComponent.element);
       taskComponent.unrender();
-    };
-
-    editTaskComponent.onSubmit = () => {
-      taskComponent.render();
-      container.replaceChild(taskComponent.element, editTaskComponent.element);
-      editTaskComponent.unrender();
     };
 
     fragment.appendChild(taskComponent.render());
@@ -82,7 +84,7 @@ const onFilterClick = (evt) => {
   const clickedTagName = evt.target.tagName.toLowerCase();
   if (clickedTagName === `input`) {
     tasksContainer.innerHTML = ``;
-    renderTasks(tasksContainer, generateTasksTemplates(generateRandomNumber(10)));
+    renderTasks(tasksContainer, generateTasksTemplates(generateRandomNumber(10, 1)));
   }
 };
 
