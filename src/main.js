@@ -64,6 +64,11 @@ const renderTasks = (container, tasks) => {
         editTaskComponent.unrender();
       };
 
+      editTaskComponent.onDelete = () => {
+        taskComponent.delete();
+        editTaskComponent.unrender();
+      };
+
       editTaskComponent.render();
       container.replaceChild(editTaskComponent.element, taskComponent.element);
       taskComponent.unrender();
