@@ -7,7 +7,7 @@ import moment from 'moment';
 export default class TaskEdit extends Component {
 
   /**
-   * Create c task
+   * Create edit task
    * @param {Object} data
    * @param {Number} dayId
    */
@@ -121,7 +121,7 @@ export default class TaskEdit extends Component {
    * @private
    */
   _isRepeating() {
-    return Object.values(this._repeatingDays).some((it) => it === true);
+    return Object.values(this._repeatingDays).some((it) => it);
   }
 
   /**

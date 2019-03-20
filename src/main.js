@@ -1,30 +1,14 @@
-import {generateRandomNumber} from './utils';
-import makeFilter from './make-filter';
 import generateTasks from './generate-tasks';
-import filters from './filters';
+import filtersData from './filters-data';
+import Filter from "./filter";
 import Task from './task';
 import TaskEdit from './task-edit';
+import moment from 'moment';
 
 const MAX_NUMBER_OF_TASKS = 7;
 
 const filterContainer = document.querySelector(`.main__filter`);
 const tasksContainer = document.querySelector(`.board__tasks`);
-
-
-/**
- * Function for generate all filters template
- * @param {Object[]} filtersData
- * @return {String}
- */
-const createFiltersTemplate = (filtersData) => {
-  let filtersTemplate = ``;
-  for (const filter of filtersData) {
-    const isChecked = filter.isChecked;
-    const randomNumber = isChecked ? generateRandomNumber(30, 1) : generateRandomNumber(30);
-    filtersTemplate += makeFilter(filter.name, randomNumber, isChecked);
-  }
-  return filtersTemplate;
-};
 
 
 /**
@@ -34,21 +18,16 @@ const createFiltersTemplate = (filtersData) => {
  */
 const generateTasksTemplates = (amount) => generateTasks(amount);
 
-
-/**
- * Function for render all filters
- * @param {Object[]} filtersData
- * @return {HTMLElement}
- */
-const renderFilters = (filtersData) => filterContainer.insertAdjacentHTML(`beforeend`, createFiltersTemplate(filtersData));
+const tasksData = generateTasksTemplates(MAX_NUMBER_OF_TASKS);
 
 
 /**
  * Function for render all tasks
  * @param {Node} container
- * @param {Number} tasks
+ * @param {Object} tasks
  */
 const renderTasks = (container, tasks) => {
+  container.innerHTML = ``;
   const fragment = document.createDocumentFragment();
 
   tasks.forEach((task, index) => {
@@ -82,19 +61,57 @@ const renderTasks = (container, tasks) => {
 
 
 /**
- * Function on filter click - generate new tasks
- * @param {Event} evt
+ * Function for filter tasks
+ * @param {Object} tasks
+ * @param {String} filterName
+ * @return {Object}
  */
-const onFilterClick = (evt) => {
-  const clickedTagName = evt.target.tagName.toLowerCase();
-  if (clickedTagName === `input`) {
-    tasksContainer.innerHTML = ``;
-    renderTasks(tasksContainer, generateTasksTemplates(generateRandomNumber(10, 1)));
+const filterTasks = (tasks, filterName) => {
+  let filteredTasks = tasks;
+
+  switch (filterName) {
+    case `all`:
+      filteredTasks = tasks;
+      break;
+    case `overdue`:
+      filteredTasks = tasks.filter((it) => it.dueDate < Date.now());
+      break;
+    case `today`:
+      filteredTasks = tasks.filter((it) => moment(it.dueDate).format(`DD`) === moment().format(`DD`));
+      break;
+    case `repeating`:
+      filteredTasks = tasks.filter((it) => Object.values(it.repeatingDays).some((day) => day));
+      break;
   }
+
+  return filteredTasks;
 };
 
 
-renderTasks(tasksContainer, generateTasksTemplates(MAX_NUMBER_OF_TASKS));
-renderFilters(filters);
+/**
+ * Function for render filters
+ * @param {Node} container
+ * @param {Object} filters
+ * @param {Object} tasks
+ */
+const renderFilters = (container, filters, tasks) => {
+  const fragment = document.createDocumentFragment();
 
-filterContainer.addEventListener(`click`, onFilterClick);
+  filters.forEach((filter) => {
+    const filterComponent = new Filter(filter);
+
+    filterComponent.onFilter = () => {
+      const filterName = filterComponent.filterId;
+      const filteredTasks = filterTasks(tasks, filterName);
+      renderTasks(tasksContainer, filteredTasks);
+    };
+
+    fragment.appendChild(filterComponent.render());
+  });
+
+  container.appendChild(fragment);
+};
+
+
+renderTasks(tasksContainer, tasksData);
+renderFilters(filterContainer, filtersData, tasksData);

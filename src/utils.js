@@ -40,3 +40,15 @@ export const createElement = (template) => {
   element.innerHTML = template;
   return element.firstChild;
 };
+
+
+/**
+ * Function for creating DOM elements (with no one wrapper)
+ * @param {String} template
+ * @return {Node}
+ */
+export const createElements = (template) => {
+  const element = document.createElement(`template`);
+  element.innerHTML = template;
+  return element.content;
+};

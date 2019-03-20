@@ -5,7 +5,7 @@ import moment from 'moment';
 export default class Task extends Component {
 
   /**
-   * Create c task
+   * Create task
    * @param {Object} data
    */
   constructor(data) {
@@ -55,7 +55,7 @@ export default class Task extends Component {
    * @private
    */
   _isRepeating() {
-    return Object.values(this._repeatingDays).some((it) => it === true);
+    return Object.values(this._repeatingDays).some((it) => it);
   }
 
   /**
