@@ -119,12 +119,14 @@ const renderFilters = (container, filters, tasks) => {
 };
 
 
+/** Function for hide statistic and show tasks */
 const showTasks = () => {
   tasksBoard.classList.remove(HIDDEN_CLASS);
   statisticContainer.classList.add(HIDDEN_CLASS);
 };
 
 
+/** Function for hide tasks and show statistic */
 const showStatistic = () => {
   statisticContainer.innerHTML = ``;
   tasksBoard.classList.add(HIDDEN_CLASS);
