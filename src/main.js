@@ -3,12 +3,18 @@ import filtersData from './filters-data';
 import Filter from "./filter";
 import Task from './task';
 import TaskEdit from './task-edit';
+import Statistic from "./statistic";
 import moment from 'moment';
 
+const HIDDEN_CLASS = `visually-hidden`;
 const MAX_NUMBER_OF_TASKS = 7;
 
 const filterContainer = document.querySelector(`.main__filter`);
 const tasksContainer = document.querySelector(`.board__tasks`);
+const tasksBoard = document.querySelector(`.board`);
+const tasksButton = document.querySelector(`#control__task`);
+const statisticContainer = document.querySelector(`.statistic`);
+const statisticButton = document.querySelector(`#control__statistic`);
 
 
 /**
@@ -113,5 +119,24 @@ const renderFilters = (container, filters, tasks) => {
 };
 
 
+const showTasks = () => {
+  tasksBoard.classList.remove(HIDDEN_CLASS);
+  statisticContainer.classList.add(HIDDEN_CLASS);
+};
+
+
+const showStatistic = () => {
+  statisticContainer.innerHTML = ``;
+  tasksBoard.classList.add(HIDDEN_CLASS);
+  statisticContainer.classList.remove(HIDDEN_CLASS);
+
+  const statisticComponent = new Statistic(tasksData);
+  statisticContainer.appendChild(statisticComponent.render());
+};
+
+
 renderTasks(tasksContainer, tasksData);
 renderFilters(filterContainer, filtersData, tasksData);
+
+tasksButton.addEventListener(`click`, showTasks);
+statisticButton.addEventListener(`click`, showStatistic);

@@ -1,5 +1,4 @@
 import Component from "./component";
-import {createElements} from "./utils";
 
 /** Class representing a filter */
 export default class Filter extends Component {
@@ -53,7 +52,7 @@ export default class Filter extends Component {
    * @return {string}
    */
   get template() {
-    return `<input
+    return `<div><input
       type="radio"
       id="filter__${this._id}"
       class="filter__input visually-hidden"
@@ -62,22 +61,12 @@ export default class Filter extends Component {
       />
       <label for="filter__${this._id}" class="filter__label">
         ${this._name} <span class="filter__${this._id}-count">n</span></label
-    >`;
+    ></div>`;
   }
 
   /** Method for bing functions to filter */
   bind() {
     this._element.querySelector(`.filter__input`).addEventListener(`click`, this._onFilterClick);
-  }
-
-  /**
-   * Method for render filter
-   * @return {Node}
-   */
-  render() {
-    this._element = createElements(this.template);
-    this.bind();
-    return this._element;
   }
 
   /** Method for unbind functions from filter */

@@ -368,7 +368,10 @@ ${this._getRepeatDaysTemplate()}
       flatpickr(this._element.querySelector(`.card__date`), {
         altInput: true,
         altFormat: `j F`,
-        dateFormat: `j F`
+        dateFormat: `j F`,
+        locale: {
+          firstDayOfWeek: 1
+        }
       });
       flatpickr(this._element.querySelector(`.card__time`), {
         enableTime: true,

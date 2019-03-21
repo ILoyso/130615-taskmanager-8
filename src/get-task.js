@@ -1,4 +1,4 @@
-import {generateRandomNumber, generateRandomBoolean, getRandomValue, getRandomValues} from './utils';
+import {generateRandomNumber, generateRandomBoolean, getRandomValue, getRandomArrayElements} from './utils';
 
 const Time = {
   WEEK: 7,
@@ -54,7 +54,7 @@ const getDays = () => ({
 export default () => ({
   title: getRandomValue(titles),
   dueDate: Date.now() + generateRandomNumber(Time.WEEK + 1, -Time.WEEK) * Time.DAY * Time.HOUR * Time.MINUTE * Time.SECOND,
-  tags: getRandomValues(Array.from(tags), 3),
+  tags: getRandomArrayElements(Array.from(tags), generateRandomNumber(4)),
   picture: `http://picsum.photos/100/100?r=${generateRandomNumber(100)}`,
   color: getRandomValue(Array.from(colors)),
   repeatingDays: getDays(),
