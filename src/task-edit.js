@@ -7,7 +7,7 @@ import moment from 'moment';
 export default class TaskEdit extends Component {
 
   /**
-   * Create c task
+   * Create edit task
    * @param {Object} data
    * @param {Number} dayId
    */
@@ -29,8 +29,10 @@ export default class TaskEdit extends Component {
 
     this._element = null;
     this._onSubmit = null;
+    this._onDelete = null;
 
     this._onSubmitButtonClick = this._onSubmitButtonClick.bind(this);
+    this._onDeleteButtonClick = this._onDeleteButtonClick.bind(this);
     this._onChangeDate = this._onChangeDate.bind(this);
     this._onChangeRepeated = this._onChangeRepeated.bind(this);
   }
@@ -119,7 +121,7 @@ export default class TaskEdit extends Component {
    * @private
    */
   _isRepeating() {
-    return Object.values(this._repeatingDays).some((it) => it === true);
+    return Object.values(this._repeatingDays).some((it) => it);
   }
 
   /**
@@ -142,6 +144,16 @@ export default class TaskEdit extends Component {
     this.unbind();
     this._updateTemplate();
     this.bind();
+  }
+
+  /**
+   * Method for delete task
+   * @private
+   */
+  _onDeleteButtonClick() {
+    if (typeof this._onDelete === `function`) {
+      this._onDelete();
+    }
   }
 
   /**
@@ -203,6 +215,14 @@ export default class TaskEdit extends Component {
    */
   _updateTemplate() {
     this._element.innerHTML = this.template;
+  }
+
+  /**
+   * Setter for function that will be work on Delete Button click
+   * @param {Function} fn
+   */
+  set onDelete(fn) {
+    this._onDelete = fn;
   }
 
   /**
@@ -340,6 +360,7 @@ ${this._getRepeatDaysTemplate()}
   /** Method for bing function to submit button */
   bind() {
     this._element.querySelector(`.card__form`).addEventListener(`submit`, this._onSubmitButtonClick);
+    this._element.querySelector(`.card__delete`).addEventListener(`click`, this._onDeleteButtonClick);
     this._element.querySelector(`.card__date-deadline-toggle`).addEventListener(`click`, this._onChangeDate);
     this._element.querySelector(`.card__repeat-toggle`).addEventListener(`click`, this._onChangeRepeated);
 
@@ -347,7 +368,10 @@ ${this._getRepeatDaysTemplate()}
       flatpickr(this._element.querySelector(`.card__date`), {
         altInput: true,
         altFormat: `j F`,
-        dateFormat: `j F`
+        dateFormat: `j F`,
+        locale: {
+          firstDayOfWeek: 1
+        }
       });
       flatpickr(this._element.querySelector(`.card__time`), {
         enableTime: true,
@@ -362,6 +386,7 @@ ${this._getRepeatDaysTemplate()}
   /** Method for unbing function from submit button */
   unbind() {
     this._element.querySelector(`.card__form`).removeEventListener(`submit`, this._onSubmitButtonClick);
+    this._element.querySelector(`.card__delete`).removeEventListener(`click`, this._onDeleteButtonClick);
     this._element.querySelector(`.card__date-deadline-toggle`).removeEventListener(`click`, this._onChangeDate);
     this._element.querySelector(`.card__repeat-toggle`).removeEventListener(`click`, this._onChangeRepeated);
   }

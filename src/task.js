@@ -5,7 +5,7 @@ import moment from 'moment';
 export default class Task extends Component {
 
   /**
-   * Create c task
+   * Create task
    * @param {Object} data
    */
   constructor(data) {
@@ -22,6 +22,7 @@ export default class Task extends Component {
     this._state = {
       isDone: false
     };
+    this._isDeleted = false;
     this._onEdit = null;
     this._onEditButtonClick = this._onEditButtonClick.bind(this);
   }
@@ -54,7 +55,7 @@ export default class Task extends Component {
    * @private
    */
   _isRepeating() {
-    return Object.values(this._repeatingDays).some((it) => it === true);
+    return Object.values(this._repeatingDays).some((it) => it);
   }
 
   /**
@@ -180,5 +181,10 @@ export default class Task extends Component {
     this._color = data.color;
     this._dueDate = data.dueDate;
     this._repeatingDays = data.repeatingDays;
+  }
+
+  /** Method for add deleted marker for task */
+  delete() {
+    this._isDeleted = !this._isDeleted;
   }
 }
