@@ -15,7 +15,7 @@ export default class Filter extends Component {
 
     this._element = null;
     this._state = {
-      isChecked: false
+      isChecked: filter.isChecked
     };
     this._onFilter = null;
     this._onFilterClick = this._onFilterClick.bind(this);
@@ -57,7 +57,7 @@ export default class Filter extends Component {
       id="filter__${this._id}"
       class="filter__input visually-hidden"
       name="filter"
- 
+      ${this._state.isChecked ? `checked` : ``}
       />
       <label for="filter__${this._id}" class="filter__label">
         ${this._name} <span class="filter__${this._id}-count">n</span></label

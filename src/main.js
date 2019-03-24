@@ -15,6 +15,7 @@ const tasksBoard = document.querySelector(`.board`);
 const tasksButton = document.querySelector(`#control__task`);
 const statisticContainer = document.querySelector(`.statistic`);
 const statisticButton = document.querySelector(`#control__statistic`);
+const loadMoreButton = document.querySelector(`.load-more`);
 
 
 /**
@@ -30,7 +31,7 @@ const tasksData = generateTasksTemplates(MAX_NUMBER_OF_TASKS);
 /**
  * Function for render all tasks
  * @param {Node} container
- * @param {Object} tasks
+ * @param {Object[]} tasks
  */
 const renderTasks = (container, tasks) => {
   container.innerHTML = ``;
@@ -68,9 +69,9 @@ const renderTasks = (container, tasks) => {
 
 /**
  * Function for filter tasks
- * @param {Object} tasks
+ * @param {Object[]} tasks
  * @param {String} filterName
- * @return {Object}
+ * @return {Object[]}
  */
 const filterTasks = (tasks, filterName) => {
   let filteredTasks = tasks;
@@ -95,10 +96,23 @@ const filterTasks = (tasks, filterName) => {
 
 
 /**
+ * Function for check should 'Load more' button be visible or no
+ * @param {Object[]} tasks
+ */
+const checkLoadMoreButton = (tasks) => {
+  if (tasks.length === 0) {
+    loadMoreButton.classList.add(HIDDEN_CLASS);
+  } else {
+    loadMoreButton.classList.remove(HIDDEN_CLASS);
+  }
+};
+
+
+/**
  * Function for render filters
  * @param {Node} container
  * @param {Object} filters
- * @param {Object} tasks
+ * @param {Object[]} tasks
  */
 const renderFilters = (container, filters, tasks) => {
   const fragment = document.createDocumentFragment();
@@ -109,6 +123,7 @@ const renderFilters = (container, filters, tasks) => {
     filterComponent.onFilter = () => {
       const filterName = filterComponent.filterId;
       const filteredTasks = filterTasks(tasks, filterName);
+      checkLoadMoreButton(filteredTasks);
       renderTasks(tasksContainer, filteredTasks);
     };
 
