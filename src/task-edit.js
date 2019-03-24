@@ -8,19 +8,19 @@ export default class TaskEdit extends Component {
 
   /**
    * Create edit task
-   * @param {Object} data
-   * @param {Number} dayId
+   * @param {Object} task
+   * @param {Number} taskId
    */
-  constructor(data, dayId) {
+  constructor(task, taskId) {
     super();
 
-    this._title = data.title;
-    this._tags = data.tags;
-    this._picture = data.picture;
-    this._color = data.color;
-    this._dueDate = data.dueDate;
-    this._repeatingDays = data.repeatingDays;
-    this._dayId = dayId;
+    this._title = task.title;
+    this._tags = task.tags;
+    this._picture = task.picture;
+    this._color = task.color;
+    this._dueDate = task.dueDate;
+    this._repeatingDays = task.repeatingDays;
+    this._dayId = taskId;
 
     this._state = {
       isDueDate: this._dueDate !== false,
@@ -405,15 +405,15 @@ ${this._getRepeatDaysTemplate()}
 
   /**
    * Method for update taskEdit regarding new data params
-   * @param {Object} data
+   * @param {Object} task
    */
-  update(data) {
-    this._title = data.title;
-    this._tags = data.tags;
-    this._picture = data.picture;
-    this._color = data.color;
-    this._dueDate = data.dueDate;
-    this._repeatingDays = data.repeatingDays;
+  update(task) {
+    this._title = task.title;
+    this._tags = task.tags;
+    this._picture = task.picture;
+    this._color = task.color;
+    this._dueDate = task.dueDate;
+    this._repeatingDays = task.repeatingDays;
   }
 
   /**

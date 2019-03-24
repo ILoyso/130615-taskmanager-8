@@ -5,12 +5,12 @@ export default class Filter extends Component {
 
   /**
    * Create filter
-   * @param {Object} data
+   * @param {Object} filter
    */
-  constructor(data) {
+  constructor(filter) {
     super();
 
-    this._name = data.name;
+    this._name = filter.name;
     this._id = this._name.toLowerCase();
 
     this._element = null;

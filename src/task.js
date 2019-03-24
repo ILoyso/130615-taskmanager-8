@@ -6,17 +6,17 @@ export default class Task extends Component {
 
   /**
    * Create task
-   * @param {Object} data
+   * @param {Object} task
    */
-  constructor(data) {
+  constructor(task) {
     super();
 
-    this._title = data.title;
-    this._tags = data.tags;
-    this._picture = data.picture;
-    this._color = data.color;
-    this._dueDate = data.dueDate;
-    this._repeatingDays = data.repeatingDays;
+    this._title = task.title;
+    this._tags = task.tags;
+    this._picture = task.picture;
+    this._color = task.color;
+    this._dueDate = task.dueDate;
+    this._repeatingDays = task.repeatingDays;
 
     this._element = null;
     this._state = {
@@ -185,15 +185,15 @@ export default class Task extends Component {
 
   /**
    * Method for update task regarding new data params
-   * @param {Object} data
+   * @param {Object} task
    */
-  update(data) {
-    this._title = data.title;
-    this._tags = data.tags;
-    this._picture = data.picture;
-    this._color = data.color;
-    this._dueDate = data.dueDate;
-    this._repeatingDays = data.repeatingDays;
+  update(task) {
+    this._title = task.title;
+    this._tags = task.tags;
+    this._picture = task.picture;
+    this._color = task.color;
+    this._dueDate = task.dueDate;
+    this._repeatingDays = task.repeatingDays;
   }
 
   /** Method for add deleted marker for task */

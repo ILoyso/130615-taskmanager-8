@@ -42,8 +42,8 @@ const renderTasks = (container, tasks) => {
     taskComponent.onEdit = () => {
       const editTaskComponent = new TaskEdit(task, index);
 
-      editTaskComponent.onSubmit = (newObject) => {
-        taskComponent.update(Object.assign(task, newObject));
+      editTaskComponent.onSubmit = (updatedTask) => {
+        taskComponent.update(Object.assign(task, updatedTask));
         taskComponent.render();
         container.replaceChild(taskComponent.element, editTaskComponent.element);
         editTaskComponent.unrender();
@@ -80,13 +80,13 @@ const filterTasks = (tasks, filterName) => {
       filteredTasks = tasks;
       break;
     case `overdue`:
-      filteredTasks = tasks.filter((it) => it.dueDate ? it.dueDate < Date.now() : false);
+      filteredTasks = tasks.filter((task) => task.dueDate ? task.dueDate < Date.now() : false);
       break;
     case `today`:
-      filteredTasks = tasks.filter((it) => it.dueDate ? moment(it.dueDate).format(`DD`) === moment().format(`DD`) : false);
+      filteredTasks = tasks.filter((task) => task.dueDate ? moment(task.dueDate).format(`DD`) === moment().format(`DD`) : false);
       break;
     case `repeating`:
-      filteredTasks = tasks.filter((it) => Object.values(it.repeatingDays).some((day) => day));
+      filteredTasks = tasks.filter((task) => Object.values(task.repeatingDays).some((day) => day));
       break;
   }
 
