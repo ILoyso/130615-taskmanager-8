@@ -80,10 +80,10 @@ const filterTasks = (tasks, filterName) => {
       filteredTasks = tasks;
       break;
     case `overdue`:
-      filteredTasks = tasks.filter((it) => it.dueDate < Date.now());
+      filteredTasks = tasks.filter((it) => it.dueDate ? it.dueDate < Date.now() : false);
       break;
     case `today`:
-      filteredTasks = tasks.filter((it) => moment(it.dueDate).format(`DD`) === moment().format(`DD`));
+      filteredTasks = tasks.filter((it) => it.dueDate ? moment(it.dueDate).format(`DD`) === moment().format(`DD`) : false);
       break;
     case `repeating`:
       filteredTasks = tasks.filter((it) => Object.values(it.repeatingDays).some((day) => day));

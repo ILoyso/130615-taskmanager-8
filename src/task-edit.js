@@ -23,7 +23,7 @@ export default class TaskEdit extends Component {
     this._dayId = dayId;
 
     this._state = {
-      isDueDate: this._dueDate !== ``,
+      isDueDate: this._dueDate !== false,
       isRepeated: this._isRepeating()
     };
 
@@ -64,6 +64,19 @@ export default class TaskEdit extends Component {
       class="card__color card__color--${color}"
       >${color}</label
     >`).join(``);
+  }
+
+  /**
+   * Method for add deadline class if needed
+   * @return {string}
+   * @private
+   */
+  _getDeadlineClass() {
+    let deadlineClass = ``;
+    if ((this._dueDate) && (this._dueDate < Date.now())) {
+      deadlineClass = `card--deadline`;
+    }
+    return deadlineClass;
   }
 
   /**
@@ -130,6 +143,7 @@ export default class TaskEdit extends Component {
    */
   _onChangeDate() {
     this._state.isDueDate = !this._state.isDueDate;
+    this._dueDate = this._dueDate ? false : moment();
     this.unbind();
     this._updateTemplate();
     this.bind();
@@ -185,7 +199,7 @@ export default class TaskEdit extends Component {
       title: ``,
       color: ``,
       tags: new Set(),
-      dueDate: new Date(this._dueDate),
+      dueDate: this._dueDate,
       repeatingDays: {
         'mo': false,
         'tu': false,
@@ -238,7 +252,7 @@ export default class TaskEdit extends Component {
    * @return {string}
    */
   get template() {
-    return `<article class="card card--${this._color} ${this._state.isRepeated ? `card--repeat` : ``} ${this._dueDate < Date.now() ? `card--deadline` : ``} card--edit">
+    return `<article class="card card--${this._color} ${this._state.isRepeated ? `card--repeat` : ``} ${this._getDeadlineClass()} card--edit">
       <form class="card__form" method="get">
         <div class="card__inner">
           <div class="card__control">
@@ -284,8 +298,7 @@ export default class TaskEdit extends Component {
                     <input
                       class="card__date"
                       type="text"
-                      placeholder="${moment(this._dueDate).format(`DD MMMM`)}"
-                      value="${moment(this._dueDate).format(`DD MMMM`)}"
+                      value="${this._dueDate ? moment(this._dueDate).format(`DD MMMM`) : ``}"
                       name="date"
                     />
                   </label>
@@ -293,8 +306,7 @@ export default class TaskEdit extends Component {
                     <input
                       class="card__time"
                       type="text"
-                      placeholder="${moment(this._dueDate).format(`hh:mm a`)}"
-                      value="${moment(this._dueDate).format(`hh:mm a`)}"
+                      value="${this._dueDate ? moment(this._dueDate).format(`hh:mm a`) : ``}"
                       name="time"
                     />
                   </label>
@@ -424,10 +436,15 @@ ${this._getRepeatDaysTemplate()}
         target.repeatingDays[value] = true;
       },
       date: (value) => {
-        target.dueDate.date = value;
+        if (target.dueDate) {
+          target.dueDate = moment(value, `DD MMMM`);
+        }
       },
       time: (value) => {
-        target.dueDate.time = value;
+        if (target.dueDate) {
+          const date = moment(target.dueDate).format(`DD MMMM YYYY`);
+          target.dueDate = moment(`${date} ${value}`, `DD MMMM YYYY hh:mm a`);
+        }
       }
     };
   }

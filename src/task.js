@@ -28,6 +28,19 @@ export default class Task extends Component {
   }
 
   /**
+   * Method for add deadline class if needed
+   * @return {string}
+   * @private
+   */
+  _getDeadlineClass() {
+    let deadlineClass = ``;
+    if ((this._dueDate) && (this._dueDate < Date.now())) {
+      deadlineClass = `card--deadline`;
+    }
+    return deadlineClass;
+  }
+
+  /**
    * Method for creating hashtags template
    * @return {String}
    * @private
@@ -81,7 +94,7 @@ export default class Task extends Component {
    * @return {string}
    */
   get template() {
-    return `<article class="card card--${this._color} ${this._isRepeating() ? `card--repeat` : ``} ${this._dueDate < Date.now() ? `card--deadline` : ``}">
+    return `<article class="card card--${this._color} ${this._isRepeating() ? `card--repeat` : ``} ${this._getDeadlineClass()}">
       <form class="card__form" method="get">
         <div class="card__inner">
           <div class="card__control">
@@ -120,7 +133,7 @@ export default class Task extends Component {
                     <input
                       class="card__date"
                       type="text"
-                      placeholder="${moment(this._dueDate).format(`DD MMMM`)}"
+                      placeholder="${this._dueDate ? moment(this._dueDate).format(`DD MMMM`) : ``}"
                       name="date"
                     />
                   </label>
@@ -128,7 +141,7 @@ export default class Task extends Component {
                     <input
                       class="card__time"
                       type="text"
-                      placeholder="${moment(this._dueDate).format(`hh:mm a`)}"
+                      placeholder="${this._dueDate ? moment(this._dueDate).format(`hh:mm a`) : ``}"
                       name="time"
                     />
                   </label>
