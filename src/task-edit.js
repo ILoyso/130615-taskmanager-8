@@ -9,9 +9,8 @@ export default class TaskEdit extends Component {
   /**
    * Create edit task
    * @param {Object} task
-   * @param {Number} taskId
    */
-  constructor(task, taskId) {
+  constructor(task) {
     super();
 
     this._title = task.title;
@@ -20,7 +19,7 @@ export default class TaskEdit extends Component {
     this._color = task.color;
     this._dueDate = task.dueDate;
     this._repeatingDays = task.repeatingDays;
-    this._dayId = taskId;
+    this._id = task.id;
 
     this._state = {
       isDueDate: this._dueDate !== false,
@@ -53,14 +52,14 @@ export default class TaskEdit extends Component {
 
     return Array.from(colors).map((color, index) => `<input
       type="radio"
-      id="color-${color}-${this._dayId}${index}"
+      id="color-${color}-${this._id}${index}"
       class="card__color-input card__color-input--${color} visually-hidden"
       name="color"
       value="${color}"
       ${color === this._color ? `checked` : ``}
     />
     <label
-      for="color-${color}-${this._dayId}${index}"
+      for="color-${color}-${this._id}${index}"
       class="card__color card__color--${color}"
       >${color}</label
     >`).join(``);
@@ -92,12 +91,12 @@ export default class TaskEdit extends Component {
         daysTemplate += `<input
           class="visually-hidden card__repeat-day-input"
           type="checkbox"
-          id="repeat-${day}-${this._dayId}${idIndex}"
+          id="repeat-${day}-${this._id}${idIndex}"
           name="repeat"
           value="${day}"
           ${this._repeatingDays[day] ? `checked` : ``}
         />
-        <label class="card__repeat-day" for="repeat-${day}-${this._dayId}${idIndex}"
+        <label class="card__repeat-day" for="repeat-${day}-${this._id}${idIndex}"
           >${day}</label
         >`;
         idIndex++;

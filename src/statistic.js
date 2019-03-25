@@ -56,7 +56,7 @@ export default class Statistic extends Component {
 
     this._data.forEach((task) => {
       if ((task.dueDate) && (moment(task.dueDate) >= this._periodBegin) && (moment(task.dueDate) <= this._periodEnd)) {
-        task.tags.map((tag) => {
+        Array.from(task.tags).map((tag) => {
           filteredTasks[tag] = isNumeric(filteredTasks[tag]) ? filteredTasks[tag] + 1 : 1;
         });
       }
