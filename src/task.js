@@ -6,17 +6,17 @@ export default class Task extends Component {
 
   /**
    * Create task
-   * @param {Object} data
+   * @param {Object} task
    */
-  constructor(data) {
+  constructor(task) {
     super();
 
-    this._title = data.title;
-    this._tags = data.tags;
-    this._picture = data.picture;
-    this._color = data.color;
-    this._dueDate = data.dueDate;
-    this._repeatingDays = data.repeatingDays;
+    this._title = task.title;
+    this._tags = task.tags;
+    this._picture = task.picture;
+    this._color = task.color;
+    this._dueDate = task.dueDate;
+    this._repeatingDays = task.repeatingDays;
 
     this._element = null;
     this._state = {
@@ -25,6 +25,19 @@ export default class Task extends Component {
     this._isDeleted = false;
     this._onEdit = null;
     this._onEditButtonClick = this._onEditButtonClick.bind(this);
+  }
+
+  /**
+   * Method for add deadline class if needed
+   * @return {string}
+   * @private
+   */
+  _getDeadlineClass() {
+    let deadlineClass = ``;
+    if ((this._dueDate) && (this._dueDate < Date.now())) {
+      deadlineClass = `card--deadline`;
+    }
+    return deadlineClass;
   }
 
   /**
@@ -81,7 +94,7 @@ export default class Task extends Component {
    * @return {string}
    */
   get template() {
-    return `<article class="card card--${this._color} ${this._isRepeating() ? `card--repeat` : ``} ${this._dueDate < Date.now() ? `card--deadline` : ``}">
+    return `<article class="card card--${this._color} ${this._isRepeating() ? `card--repeat` : ``} ${this._getDeadlineClass()}">
       <form class="card__form" method="get">
         <div class="card__inner">
           <div class="card__control">
@@ -120,7 +133,7 @@ export default class Task extends Component {
                     <input
                       class="card__date"
                       type="text"
-                      placeholder="${moment(this._dueDate).format(`DD MMMM`)}"
+                      placeholder="${this._dueDate ? moment(this._dueDate).format(`DD MMMM`) : ``}"
                       name="date"
                     />
                   </label>
@@ -128,7 +141,7 @@ export default class Task extends Component {
                     <input
                       class="card__time"
                       type="text"
-                      placeholder="${moment(this._dueDate).format(`hh:mm a`)}"
+                      placeholder="${this._dueDate ? moment(this._dueDate).format(`hh:mm a`) : ``}"
                       name="time"
                     />
                   </label>
@@ -172,15 +185,15 @@ export default class Task extends Component {
 
   /**
    * Method for update task regarding new data params
-   * @param {Object} data
+   * @param {Object} task
    */
-  update(data) {
-    this._title = data.title;
-    this._tags = data.tags;
-    this._picture = data.picture;
-    this._color = data.color;
-    this._dueDate = data.dueDate;
-    this._repeatingDays = data.repeatingDays;
+  update(task) {
+    this._title = task.title;
+    this._tags = task.tags;
+    this._picture = task.picture;
+    this._color = task.color;
+    this._dueDate = task.dueDate;
+    this._repeatingDays = task.repeatingDays;
   }
 
   /** Method for add deleted marker for task */

@@ -1,57 +1,76 @@
-import generateTasks from './generate-tasks';
 import filtersData from './filters-data';
 import Filter from "./filter";
 import Task from './task';
 import TaskEdit from './task-edit';
 import Statistic from "./statistic";
 import moment from 'moment';
+import API from './api';
 
 const HIDDEN_CLASS = `visually-hidden`;
-const MAX_NUMBER_OF_TASKS = 7;
 
+const loadingContainer = document.querySelector(`.board__no-tasks`);
 const filterContainer = document.querySelector(`.main__filter`);
 const tasksContainer = document.querySelector(`.board__tasks`);
 const tasksBoard = document.querySelector(`.board`);
 const tasksButton = document.querySelector(`#control__task`);
 const statisticContainer = document.querySelector(`.statistic`);
 const statisticButton = document.querySelector(`#control__statistic`);
+const loadMoreButton = document.querySelector(`.load-more`);
+
+const AUTHORIZATION = `Basic lo7y54048s984030o`;
+const END_POINT = `https://es8-demo-srv.appspot.com/task-manager`;
 
 
 /**
- * Function for generate array with all tasks data
- * @param {Number} amount
- * @return {Object[]}
+ * Create new api for working with server
+ * @type {API}
  */
-const generateTasksTemplates = (amount) => generateTasks(amount);
-
-const tasksData = generateTasksTemplates(MAX_NUMBER_OF_TASKS);
+const api = new API({
+  endPoint: END_POINT,
+  authorization: AUTHORIZATION
+});
 
 
 /**
  * Function for render all tasks
- * @param {Node} container
- * @param {Object} tasks
+ * @param {Object[]} tasks
+ * @param {Node} container [container=tasksContainer]
  */
-const renderTasks = (container, tasks) => {
+const renderTasks = (tasks, container = tasksContainer) => {
   container.innerHTML = ``;
   const fragment = document.createDocumentFragment();
 
-  tasks.forEach((task, index) => {
+  tasks.forEach((task) => {
     const taskComponent = new Task(task);
 
     taskComponent.onEdit = () => {
-      const editTaskComponent = new TaskEdit(task, index);
+      const editTaskComponent = new TaskEdit(task);
 
-      editTaskComponent.onSubmit = (newObject) => {
-        taskComponent.update(Object.assign(task, newObject));
-        taskComponent.render();
-        container.replaceChild(taskComponent.element, editTaskComponent.element);
-        editTaskComponent.unrender();
+      editTaskComponent.onSubmit = (updatedTask) => {
+        task = Object.assign(task, updatedTask);
+
+        api.updateTask({id: task.id, data: task.toRAW()})
+          .then((newTask) => {
+            editTaskComponent.unblock();
+            taskComponent.update(newTask);
+            taskComponent.render();
+            container.replaceChild(taskComponent.element, editTaskComponent.element);
+            editTaskComponent.unrender();
+          })
+          .catch(() => {
+            editTaskComponent.shake();
+            editTaskComponent.unblock();
+          });
       };
 
       editTaskComponent.onDelete = () => {
-        taskComponent.delete();
-        editTaskComponent.unrender();
+        api.deleteTask({id: task.id})
+          .then(() => api.getTasks())
+          .then(renderTasks)
+          .catch(() => {
+            editTaskComponent.shake();
+            editTaskComponent.unblock();
+          });
       };
 
       editTaskComponent.render();
@@ -68,9 +87,9 @@ const renderTasks = (container, tasks) => {
 
 /**
  * Function for filter tasks
- * @param {Object} tasks
+ * @param {Object[]} tasks
  * @param {String} filterName
- * @return {Object}
+ * @return {Object[]}
  */
 const filterTasks = (tasks, filterName) => {
   let filteredTasks = tasks;
@@ -80,13 +99,13 @@ const filterTasks = (tasks, filterName) => {
       filteredTasks = tasks;
       break;
     case `overdue`:
-      filteredTasks = tasks.filter((it) => it.dueDate < Date.now());
+      filteredTasks = tasks.filter((task) => task.dueDate ? task.dueDate < Date.now() : false);
       break;
     case `today`:
-      filteredTasks = tasks.filter((it) => moment(it.dueDate).format(`DD`) === moment().format(`DD`));
+      filteredTasks = tasks.filter((task) => task.dueDate ? moment(task.dueDate).format(`DD`) === moment().format(`DD`) : false);
       break;
     case `repeating`:
-      filteredTasks = tasks.filter((it) => Object.values(it.repeatingDays).some((day) => day));
+      filteredTasks = tasks.filter((task) => Object.values(task.repeatingDays).some((day) => day));
       break;
   }
 
@@ -95,12 +114,25 @@ const filterTasks = (tasks, filterName) => {
 
 
 /**
- * Function for render filters
- * @param {Node} container
- * @param {Object} filters
- * @param {Object} tasks
+ * Function for check should 'Load more' button be visible or no
+ * @param {Object[]} tasks
  */
-const renderFilters = (container, filters, tasks) => {
+const checkLoadMoreButton = (tasks) => {
+  if (tasks.length === 0) {
+    loadMoreButton.classList.add(HIDDEN_CLASS);
+  } else {
+    loadMoreButton.classList.remove(HIDDEN_CLASS);
+  }
+};
+
+
+/**
+ * Function for render filters
+ * @param {Object} filters
+ * @param {Object[]} tasks
+ * @param {Node} container [container=filterContainer]
+ */
+const renderFilters = (filters, tasks, container = filterContainer) => {
   const fragment = document.createDocumentFragment();
 
   filters.forEach((filter) => {
@@ -109,7 +141,8 @@ const renderFilters = (container, filters, tasks) => {
     filterComponent.onFilter = () => {
       const filterName = filterComponent.filterId;
       const filteredTasks = filterTasks(tasks, filterName);
-      renderTasks(tasksContainer, filteredTasks);
+      checkLoadMoreButton(filteredTasks);
+      renderTasks(filteredTasks);
     };
 
     fragment.appendChild(filterComponent.render());
@@ -128,17 +161,51 @@ const showTasks = () => {
 
 /** Function for hide tasks and show statistic */
 const showStatistic = () => {
-  statisticContainer.innerHTML = ``;
   tasksBoard.classList.add(HIDDEN_CLASS);
   statisticContainer.classList.remove(HIDDEN_CLASS);
+};
 
-  const statisticComponent = new Statistic(tasksData);
+
+/**
+ * Function for create statistic
+ * @param {Object[]} tasks
+ */
+const createStatistic = (tasks) => {
+  const statisticComponent = new Statistic(tasks);
   statisticContainer.appendChild(statisticComponent.render());
 };
 
 
-renderTasks(tasksContainer, tasksData);
-renderFilters(filterContainer, filtersData, tasksData);
+/**
+ * Function for show loader
+ * @param {String} text
+ */
+const showLoader = (text = `Loading tasks...`) => {
+  loadingContainer.textContent = text;
+  loadingContainer.classList.remove(HIDDEN_CLASS);
+};
+
+
+/** Function for hide loader */
+const hideLoader = () => {
+  loadingContainer.textContent = `Loading tasks...`;
+  loadingContainer.classList.add(HIDDEN_CLASS);
+};
+
+
+showLoader();
+
+api.getTasks()
+  .then((tasks) => {
+    hideLoader();
+    renderTasks(tasks);
+    renderFilters(filtersData, tasks);
+    createStatistic(tasks);
+  })
+  .catch(() => {
+    showLoader(`Something went wrong while loading your tasks. Check your connection or try again later`);
+  });
+
 
 tasksButton.addEventListener(`click`, showTasks);
 statisticButton.addEventListener(`click`, showStatistic);

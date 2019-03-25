@@ -12,12 +12,12 @@ export default class Statistic extends Component {
 
   /**
    * Create statistic
-   * @param {Object} data
+   * @param {Object} tasks
    */
-  constructor(data) {
+  constructor(tasks) {
     super();
 
-    this._data = data;
+    this._data = tasks;
     this._periodBegin = moment().startOf(`isoWeek`);
     this._periodEnd = moment().endOf(`isoWeek`);
 
@@ -34,7 +34,7 @@ export default class Statistic extends Component {
     let filteredTasks = {};
 
     this._data.forEach((task) => {
-      if ((moment(task.dueDate) >= this._periodBegin) && (moment(task.dueDate) <= this._periodEnd)) {
+      if ((task.dueDate) && (moment(task.dueDate) >= this._periodBegin) && (moment(task.dueDate) <= this._periodEnd)) {
         filteredTasks[task.color] = isNumeric(filteredTasks[task.color]) ? filteredTasks[task.color] + 1 : 1;
       }
     });
@@ -55,8 +55,8 @@ export default class Statistic extends Component {
     let filteredTasks = {};
 
     this._data.forEach((task) => {
-      if ((moment(task.dueDate) >= this._periodBegin) && (moment(task.dueDate) <= this._periodEnd)) {
-        task.tags.map((tag) => {
+      if ((task.dueDate) && (moment(task.dueDate) >= this._periodBegin) && (moment(task.dueDate) <= this._periodEnd)) {
+        Array.from(task.tags).map((tag) => {
           filteredTasks[tag] = isNumeric(filteredTasks[tag]) ? filteredTasks[tag] + 1 : 1;
         });
       }
