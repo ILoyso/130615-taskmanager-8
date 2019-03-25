@@ -164,6 +164,9 @@ export default class TaskEdit extends Component {
    * @private
    */
   _onDeleteButtonClick() {
+    this.block();
+    this._element.querySelector(`.card__delete`).textContent = `Deleting...`;
+
     if (typeof this._onDelete === `function`) {
       this._onDelete();
     }
@@ -179,6 +182,9 @@ export default class TaskEdit extends Component {
 
     const formData = new FormData(this._element.querySelector(`.card__form`));
     const newData = this._processForm(formData);
+
+    this.block();
+    this._element.querySelector(`.card__save`).textContent = `Saving...`;
 
     if (typeof this._onSubmit === `function`) {
       this._onSubmit(newData);
@@ -376,7 +382,7 @@ ${this._getRepeatDaysTemplate()}
     this._element.querySelector(`.card__repeat-toggle`).addEventListener(`click`, this._onChangeRepeated);
 
     if (this._state.isDueDate) {
-      flatpickr(this._element.querySelector(`.card__date`), {
+      this._flatpickrDate = flatpickr(this._element.querySelector(`.card__date`), {
         altInput: true,
         altFormat: `j F`,
         dateFormat: `j F`,
@@ -384,7 +390,7 @@ ${this._getRepeatDaysTemplate()}
           firstDayOfWeek: 1
         }
       });
-      flatpickr(this._element.querySelector(`.card__time`), {
+      this._flatpickrTime = flatpickr(this._element.querySelector(`.card__time`), {
         enableTime: true,
         noCalendar: true,
         altInput: true,
@@ -394,12 +400,52 @@ ${this._getRepeatDaysTemplate()}
     }
   }
 
+  /** Method for block all fields */
+  block() {
+    const blockElements = (element) => {
+      element.disabled = true;
+    };
+
+    this._flatpickrDate.destroy();
+    this._flatpickrTime.destroy();
+
+    this._element.querySelectorAll(`input, textarea, button`).forEach((element) => {
+      blockElements(element);
+    });
+  }
+
+  /** Method for show shake animation */
+  shake() {
+    const ANIMATION_TIMEOUT = 600;
+    this._element.style.animation = `shake ${ANIMATION_TIMEOUT / 1000}s`;
+    this._element.querySelector(`.card__inner`).style.border = `1px solid red`;
+
+    setTimeout(() => {
+      this._element.style.animation = ``;
+      this._element.querySelector(`.card__inner`).style.border = `1px solid black`;
+    }, ANIMATION_TIMEOUT);
+  }
+
   /** Method for unbing function from submit button */
   unbind() {
     this._element.querySelector(`.card__form`).removeEventListener(`submit`, this._onSubmitButtonClick);
     this._element.querySelector(`.card__delete`).removeEventListener(`click`, this._onDeleteButtonClick);
     this._element.querySelector(`.card__date-deadline-toggle`).removeEventListener(`click`, this._onChangeDate);
     this._element.querySelector(`.card__repeat-toggle`).removeEventListener(`click`, this._onChangeRepeated);
+  }
+
+  /** Method for block all fields */
+  unblock() {
+    const unblockElements = (element) => {
+      element.disabled = false;
+    };
+
+    this._element.querySelector(`.card__save`).textContent = `Save`;
+    this._element.querySelector(`.card__delete`).textContent = `Delete`;
+
+    this._element.querySelectorAll(`input, textarea, button`).forEach((element) => {
+      unblockElements(element);
+    });
   }
 
   /**

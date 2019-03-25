@@ -8,6 +8,7 @@ import API from './api';
 
 const HIDDEN_CLASS = `visually-hidden`;
 
+const loadingContainer = document.querySelector(`.board__no-tasks`);
 const filterContainer = document.querySelector(`.main__filter`);
 const tasksContainer = document.querySelector(`.board__tasks`);
 const tasksBoard = document.querySelector(`.board`);
@@ -50,10 +51,15 @@ const renderTasks = (tasks, container = tasksContainer) => {
 
         api.updateTask({id: task.id, data: task.toRAW()})
           .then((newTask) => {
+            editTaskComponent.unblock();
             taskComponent.update(newTask);
             taskComponent.render();
             container.replaceChild(taskComponent.element, editTaskComponent.element);
             editTaskComponent.unrender();
+          })
+          .catch(() => {
+            editTaskComponent.shake();
+            editTaskComponent.unblock();
           });
       };
 
@@ -61,7 +67,10 @@ const renderTasks = (tasks, container = tasksContainer) => {
         api.deleteTask({id: task.id})
           .then(() => api.getTasks())
           .then(renderTasks)
-          .catch(alert);
+          .catch(() => {
+            editTaskComponent.shake();
+            editTaskComponent.unblock();
+          });
       };
 
       editTaskComponent.render();
@@ -167,11 +176,34 @@ const createStatistic = (tasks) => {
 };
 
 
+/**
+ * Function for show loader
+ * @param {String} text
+ */
+const showLoader = (text = `Loading tasks...`) => {
+  loadingContainer.textContent = text;
+  loadingContainer.classList.remove(HIDDEN_CLASS);
+};
+
+
+/** Function for hide loader */
+const hideLoader = () => {
+  loadingContainer.textContent = `Loading tasks...`;
+  loadingContainer.classList.add(HIDDEN_CLASS);
+};
+
+
+showLoader();
+
 api.getTasks()
   .then((tasks) => {
+    hideLoader();
     renderTasks(tasks);
     renderFilters(filtersData, tasks);
     createStatistic(tasks);
+  })
+  .catch(() => {
+    showLoader(`Something went wrong while loading your tasks. Check your connection or try again later`);
   });
 
 
