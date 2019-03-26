@@ -8,12 +8,13 @@ import API from './api';
 
 const HIDDEN_CLASS = `visually-hidden`;
 
+const main = document.querySelector(`.main`);
+const resultContainer = document.querySelector(`.result`);
+const searchContainer = document.querySelector(`.main__search`);
 const loadingContainer = document.querySelector(`.board__no-tasks`);
-const filterContainer = document.querySelector(`.main__filter`);
 const tasksContainer = document.querySelector(`.board__tasks`);
 const tasksBoard = document.querySelector(`.board`);
 const tasksButton = document.querySelector(`#control__task`);
-const statisticContainer = document.querySelector(`.statistic`);
 const statisticButton = document.querySelector(`#control__statistic`);
 const loadMoreButton = document.querySelector(`.load-more`);
 
@@ -95,16 +96,16 @@ const filterTasks = (tasks, filterName) => {
   let filteredTasks = tasks;
 
   switch (filterName) {
-    case `all`:
+    case `filter__all`:
       filteredTasks = tasks;
       break;
-    case `overdue`:
+    case `filter__overdue`:
       filteredTasks = tasks.filter((task) => task.dueDate ? task.dueDate < Date.now() : false);
       break;
-    case `today`:
+    case `filter__today`:
       filteredTasks = tasks.filter((task) => task.dueDate ? moment(task.dueDate).format(`DD`) === moment().format(`DD`) : false);
       break;
-    case `repeating`:
+    case `filter__repeating`:
       filteredTasks = tasks.filter((task) => Object.values(task.repeatingDays).some((day) => day));
       break;
   }
@@ -130,39 +131,32 @@ const checkLoadMoreButton = (tasks) => {
  * Function for render filters
  * @param {Object} filters
  * @param {Object[]} tasks
- * @param {Node} container [container=filterContainer]
  */
-const renderFilters = (filters, tasks, container = filterContainer) => {
-  const fragment = document.createDocumentFragment();
+const renderFilters = (filters, tasks) => {
+  const filterComponent = new Filter(filters);
 
-  filters.forEach((filter) => {
-    const filterComponent = new Filter(filter);
+  filterComponent.onFilter = (evt) => {
+    const filterName = evt.target.id;
+    const filteredTasks = filterTasks(tasks, filterName);
+    checkLoadMoreButton(filteredTasks);
+    renderTasks(filteredTasks);
+  };
 
-    filterComponent.onFilter = () => {
-      const filterName = filterComponent.filterId;
-      const filteredTasks = filterTasks(tasks, filterName);
-      checkLoadMoreButton(filteredTasks);
-      renderTasks(filteredTasks);
-    };
-
-    fragment.appendChild(filterComponent.render());
-  });
-
-  container.appendChild(fragment);
+  searchContainer.after(filterComponent.render());
 };
 
 
 /** Function for hide statistic and show tasks */
 const showTasks = () => {
   tasksBoard.classList.remove(HIDDEN_CLASS);
-  statisticContainer.classList.add(HIDDEN_CLASS);
+  document.querySelector(`.statistic`).classList.add(HIDDEN_CLASS);
 };
 
 
 /** Function for hide tasks and show statistic */
 const showStatistic = () => {
   tasksBoard.classList.add(HIDDEN_CLASS);
-  statisticContainer.classList.remove(HIDDEN_CLASS);
+  document.querySelector(`.statistic`).classList.remove(HIDDEN_CLASS);
 };
 
 
@@ -172,7 +166,7 @@ const showStatistic = () => {
  */
 const createStatistic = (tasks) => {
   const statisticComponent = new Statistic(tasks);
-  statisticContainer.appendChild(statisticComponent.render());
+  main.insertBefore(statisticComponent.render(), resultContainer);
 };
 
 

@@ -5,29 +5,51 @@ export default class Filter extends Component {
 
   /**
    * Create filter
-   * @param {Object} filter
+   * @param {Object[]} filters
    */
-  constructor(filter) {
+  constructor(filters) {
     super();
 
-    this._name = filter.name;
-    this._id = this._name.toLowerCase();
+    this._filters = filters;
 
     this._element = null;
-    this._state = {
-      isChecked: filter.isChecked
-    };
     this._onFilter = null;
     this._onFilterClick = this._onFilterClick.bind(this);
   }
 
   /**
+   * Method for creating filters template
+   * @return {String}
+   */
+  _getFiltersTemplate() {
+    let filtersTemplate = ``;
+
+    this._filters.map((filter) => {
+      const name = filter.name;
+      const id = name.toLowerCase();
+      filtersTemplate += `<input
+        type="radio"
+        id="filter__${id}"
+        class="filter__input visually-hidden"
+        name="filter"
+        ${filter.isChecked ? `checked` : ``}
+        />
+        <label for="filter__${id}" class="filter__label">
+          ${name} <span class="filter__${id}-count">n</span></label
+        >`;
+    });
+
+    return filtersTemplate;
+  }
+
+  /**
    * Method for check for function and if yes to white it in this._onFilter
+   * @param {Event} evt
    * @private
    */
-  _onFilterClick() {
+  _onFilterClick(evt) {
     if (typeof this._onFilter === `function`) {
-      this._onFilter();
+      this._onFilter(evt);
     }
   }
 
@@ -40,37 +62,26 @@ export default class Filter extends Component {
   }
 
   /**
-   * Getter for filter id
+   * Getter for filter template
    * @return {String}
    */
-  get filterId() {
-    return this._id;
-  }
-
-  /**
-   * Getter for filter template
-   * @return {string}
-   */
   get template() {
-    return `<div><input
-      type="radio"
-      id="filter__${this._id}"
-      class="filter__input visually-hidden"
-      name="filter"
-      ${this._state.isChecked ? `checked` : ``}
-      />
-      <label for="filter__${this._id}" class="filter__label">
-        ${this._name} <span class="filter__${this._id}-count">n</span></label
-    ></div>`;
+    return `<section class="main__filter filter container">
+        ${this._getFiltersTemplate()}
+      </section>`;
   }
 
   /** Method for bing functions to filter */
   bind() {
-    this._element.querySelector(`.filter__input`).addEventListener(`click`, this._onFilterClick);
+    this._element.querySelectorAll(`.filter__input`).forEach((element) => {
+      element.addEventListener(`click`, this._onFilterClick);
+    });
   }
 
   /** Method for unbind functions from filter */
   unbind() {
-    this._element.querySelector(`.filter__input`).removeEventListener(`click`, this._onFilterClick);
+    this._element.querySelectorAll(`.filter__input`).forEach((element) => {
+      element.removeEventListener(`click`, this._onFilterClick);
+    });
   }
 }
