@@ -8,7 +8,7 @@ export default class ModelTask {
   constructor(data) {
     this.id = data[`id`];
     this.title = data[`title`] || ``;
-    this.dueDate = new Date(data[`due_date`]);
+    this.dueDate = data[`due_date`];
     this.tags = new Set(data[`tags`] || []);
     this.picture = data[`picture`] || ``;
     this.repeatingDays = data[`repeating_days`];

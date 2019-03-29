@@ -22,7 +22,7 @@ export default class TaskEdit extends Component {
     this._id = task.id;
 
     this._state = {
-      isDueDate: this._dueDate !== false,
+      isDueDate: this._dueDate !== ``,
       isRepeated: this._isRepeating()
     };
 
@@ -141,9 +141,9 @@ export default class TaskEdit extends Component {
    * @private
    */
   _onChangeDate() {
-    this._state.isDueDate = !this._state.isDueDate;
-    this._dueDate = this._dueDate ? false : moment();
     this.unbind();
+    this._state.isDueDate = !this._state.isDueDate;
+    this._dueDate = this._dueDate ? `` : moment();
     this._updateTemplate();
     this.bind();
   }
@@ -406,8 +406,10 @@ ${this._getRepeatDaysTemplate()}
       element.disabled = true;
     };
 
-    this._flatpickrDate.destroy();
-    this._flatpickrTime.destroy();
+    if (this._state.isDueDate) {
+      this._flatpickrDate.destroy();
+      this._flatpickrTime.destroy();
+    }
 
     this._element.querySelectorAll(`input, textarea, button`).forEach((element) => {
       blockElements(element);
@@ -432,6 +434,11 @@ ${this._getRepeatDaysTemplate()}
     this._element.querySelector(`.card__delete`).removeEventListener(`click`, this._onDeleteButtonClick);
     this._element.querySelector(`.card__date-deadline-toggle`).removeEventListener(`click`, this._onChangeDate);
     this._element.querySelector(`.card__repeat-toggle`).removeEventListener(`click`, this._onChangeRepeated);
+
+    if (this._state.isDueDate) {
+      this._flatpickrDate.destroy();
+      this._flatpickrTime.destroy();
+    }
   }
 
   /** Method for block all fields */
