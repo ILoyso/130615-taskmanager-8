@@ -75,6 +75,21 @@ export default class API {
   }
 
   /**
+   * Method for sync data between server and localStorage
+   * @param {Object[]} tasks
+   * @return {Promise<Response | never>}
+   */
+  syncTasks({tasks}) {
+    return this._load({
+      url: `tasks/sync`,
+      method: `POST`,
+      body: JSON.stringify(tasks),
+      headers: new Headers({'Content-Type': `application/json`})
+    })
+      .then(toJSON);
+  }
+
+  /**
    * Method for update task on server
    * @param {Number} id
    * @param {Object} data

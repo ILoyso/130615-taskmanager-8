@@ -175,7 +175,8 @@ export default class Statistic extends Component {
    * @return {string}
    */
   get template() {
-    return `<div><div class="statistic__line">
+    return `<section class="statistic container visually-hidden">
+        <div class="statistic__line">
           <div class="statistic__period">
             <h2 class="statistic__period-title">Task Activity DIAGRAM</h2>
 
@@ -204,7 +205,8 @@ export default class Statistic extends Component {
           <div class="statistic__colors-wrap">
             <canvas class="statistic__colors" width="400" height="300"></canvas>
           </div>
-        </div></div>`;
+        </div>
+      </section>`;
   }
 
   /** Method for bing functions to statistic */
