@@ -5,6 +5,8 @@ import TaskEdit from './task-edit';
 import Statistic from "./statistic";
 import moment from 'moment';
 import API from './api';
+import Store from './store';
+import Provider from './provider';
 
 const HIDDEN_CLASS = `visually-hidden`;
 
@@ -20,15 +22,35 @@ const loadMoreButton = document.querySelector(`.load-more`);
 
 const AUTHORIZATION = `Basic lo7y54048s984030o`;
 const END_POINT = `https://es8-demo-srv.appspot.com/task-manager`;
+const TASKS_STORE_KEY = `tasks-store-key`;
 
 
 /**
  * Create new api for working with server
  * @type {API}
  */
-const api = new API({
-  endPoint: END_POINT,
-  authorization: AUTHORIZATION
+const api = new API({endPoint: END_POINT, authorization: AUTHORIZATION});
+
+/**
+ * Create a store for working with localStorage
+ * @type {Store}
+ */
+const store = new Store({key: TASKS_STORE_KEY, storage: localStorage});
+
+/**
+ * Create a Provider for synchronize working api and store
+ * @type {Provider}
+ */
+const provider = new Provider({api, store, generateId: () => String(Date.now())});
+
+
+window.addEventListener(`offline`, () => {
+  document.title = `${document.title}[OFFLINE]`;
+});
+
+window.addEventListener(`online`, () => {
+  document.title = document.title.split(`[OFFLINE]`)[0];
+  provider.syncTasks();
 });
 
 
@@ -50,7 +72,7 @@ const renderTasks = (tasks, container = tasksContainer) => {
       editTaskComponent.onSubmit = (updatedTask) => {
         task = Object.assign(task, updatedTask);
 
-        api.updateTask({id: task.id, data: task.toRAW()})
+        provider.updateTask({id: task.id, data: task.toRAW()})
           .then((newTask) => {
             editTaskComponent.unblock();
             taskComponent.update(newTask);
@@ -65,8 +87,8 @@ const renderTasks = (tasks, container = tasksContainer) => {
       };
 
       editTaskComponent.onDelete = () => {
-        api.deleteTask({id: task.id})
-          .then(() => api.getTasks())
+        provider.deleteTask({id: task.id})
+          .then(() => provider.getTasks())
           .then(renderTasks)
           .catch(() => {
             editTaskComponent.shake();
@@ -189,7 +211,7 @@ const hideLoader = () => {
 
 showLoader();
 
-api.getTasks()
+provider.getTasks()
   .then((tasks) => {
     hideLoader();
     renderTasks(tasks);
